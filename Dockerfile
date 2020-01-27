@@ -1,10 +1,13 @@
 FROM python:3.8.1
 
-COPY requirements.txt /requirements.txt
 COPY app/ app/
 
-RUN pip install -r requirements.txt
+WORKDIR app
 
-WORKDIR app/
+COPY requirements.txt /requirements.txt
 
-CMD python app.py
+RUN pip install -r /requirements.txt
+
+COPY .env /.env
+
+CMD flask run
