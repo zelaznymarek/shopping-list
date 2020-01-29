@@ -2,4 +2,4 @@ from os import environ
 
 
 class Config:
-    pass
+    SECRET_KEY = environ.get('SECRET_KEY') or 'bababa dotykam okiem'
