@@ -1,13 +1,11 @@
 FROM python:3.8.1
 
-COPY app/ app/
+WORKDIR /src
 
-WORKDIR app
+COPY .env .env
+COPY requirements.txt requirements.txt
+COPY config.py config.py
 
-COPY requirements.txt /requirements.txt
+RUN pip install -r requirements.txt
 
-RUN pip install -r /requirements.txt
-
-COPY .env /.env
-
-CMD flask run
+CMD flask run -h 0.0.0.0
