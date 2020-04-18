@@ -1,3 +1,4 @@
+"""
 from datetime import datetime
 
 from flask_sqlalchemy import SQLAlchemy
@@ -26,3 +27,4 @@ class List(db.Model):
 class ProductList(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), primary_key=True)
     list_id = db.Column(db.Integer, db.ForeignKey('list.id'), primary_key=True)
+"""

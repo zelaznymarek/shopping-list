@@ -24,3 +24,6 @@ restart.scratch: stop.unmount build.scratch start
 
 status:
 	$(DC) ps
+
+logs:
+	$(DC) logs -f

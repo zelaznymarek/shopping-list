@@ -1,11 +1,8 @@
-FROM python:3.8.1
+FROM python:3.8
 
-WORKDIR /src
-
-COPY .env .env
 COPY requirements.txt requirements.txt
-COPY config.py config.py
-
 RUN pip install -r requirements.txt
 
-CMD flask run -h 0.0.0.0
+COPY src/ /src
+
+CMD uvicorn src.app:app --reload  --host "0.0.0.0" --port "8000"
