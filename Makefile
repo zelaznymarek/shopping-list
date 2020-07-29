@@ -1,7 +1,7 @@
 DC = docker-compose
 
 build:
-	$(DC) build --no-cache
+	$(DC) build
 
 up:
 	$(DC) up
