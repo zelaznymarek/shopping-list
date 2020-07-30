@@ -16,7 +16,7 @@ services:
     build:
       context: backend
       dockerfile: Dockerfile
-    command: python app/main.py
+    command: bash -c "alembic -c app/alembic.ini upgrade head && python app/main.py"
     ports:
       - '8888:8888'
     volumes:

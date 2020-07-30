@@ -22,7 +22,7 @@ class User(Base):
     name = Column(String(50), nullable=False)
     hashed_password = Column(String(100), nullable=False)
     is_admin = Column(Boolean, default=False)
-    lists = relationship('list', back_populates='user', cascade='all, delete', passive_deletes=True)
+    lists = relationship('List', back_populates='user', cascade='all, delete', passive_deletes=True)
 
 
 class List(Base):
@@ -33,8 +33,8 @@ class List(Base):
     created_at = Column(Date, default=datetime.utcnow())
     completed = Column(Boolean, default=False)
     user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
-    user = relationship('user', back_populates='list')
-    products = relationship('product', secondary=product_list)
+    user = relationship('User', back_populates='lists')
+    products = relationship('Product', secondary=product_list)
 
 
 class Product(Base):
@@ -43,7 +43,7 @@ class Product(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True, unique=True, nullable=False)
     category_id = Column(Integer, ForeignKey('category.id'))
-    category = relationship('category', back_populates='product')
+    category = relationship('Category', back_populates='products')
 
 
 class Category(Base):
@@ -51,4 +51,4 @@ class Category(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True, unique=True, nullable=False)
-    products = relationship('product', back_populates='category')
+    products = relationship('Product', back_populates='category')
