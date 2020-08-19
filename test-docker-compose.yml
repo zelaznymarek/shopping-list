@@ -4,7 +4,7 @@ services:
     image: postgres:12
     restart: always
     environment:
-      POSTGRES_DB: shopping_test
+      POSTGRES_DB: shopping
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
@@ -13,17 +13,17 @@ services:
   test_backend:
     build:
       context: backend
-      dockerfile: Dockerfile
-    command: bash -c "alembic -c app/alembic.ini upgrade head && pytest -vvvv"
+      dockerfile: test.dockerfile
+    command: bash -c "pytest -vvvvs"
     volumes:
       - type: bind
         source: ./backend
         target: /src
     environment:
       PYTHONPATH: .
-      DATABASE_URL: 'postgresql://postgres:postgres@test_postgres:5432/shopping_test'
+      DATABASE_URL: 'postgresql://postgres:postgres@test_postgres:5432/shopping'
     depends_on:
-      - 'test_postgres'
+      - test_postgres
 
 volumes:
   test-db-data:

@@ -13,6 +13,7 @@ services:
       - db-data:/var/lib/postgresql/data:cached
 
   backend:
+    image: sl_base
     build:
       context: backend
       dockerfile: Dockerfile

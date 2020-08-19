@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, Boolean, Date, ForeignKey, Table
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Table
 from sqlalchemy.orm import relationship
 
 from app.db.session import Base
@@ -30,7 +30,7 @@ class List(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, default=datetime.utcnow().date().isoformat())
-    created_at = Column(Date, default=datetime.utcnow())
+    created_at = Column(DateTime, default=datetime.utcnow())
     completed = Column(Boolean, default=False)
     user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
     user = relationship('User', back_populates='lists')
