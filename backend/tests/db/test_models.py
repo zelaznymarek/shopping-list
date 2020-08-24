@@ -225,6 +225,8 @@ def test_user_delete_keeps_products(
     db_session.add(example_list)
     db_session.commit()
 
+    # Clear products from list before delete
+    example_user.lists[0].products = []
     db_session.delete(example_user)
     db_session.commit()
 
@@ -234,4 +236,73 @@ def test_user_delete_keeps_products(
 
     assert len(user) == 0
     assert len(lists) == 0
+    assert len(products) == 3
+
+
+def test_product_delete(
+      db_session: Session,
+      example_list: ShoppingList,
+      example_products: List[Product]
+):
+    """Check whether products are removed from list when deleted"""
+    example_list.products = example_products
+
+    db_session.add(example_list)
+    db_session.commit()
+
+    # Remove the product from yhe list before deletion
+    example_list.products.remove(example_products[0])
+    db_session.delete(example_products[0])
+    db_session.commit()
+
+    assert len(example_list.products) == 2
+
+
+def test_product_category_relation(db_session: Session, example_category: Category, example_products: List[Product]):
+    """Check whether orm adds products along with category"""
+    example_category.products = example_products
+
+    db_session.add(example_category)
+    db_session.commit()
+
+    categories: List[Category] = db_session.query(Category).all()
+
+    assert categories[0].products == example_products
+
+
+def test_product_category_relation_delete_product(
+      db_session: Session,
+      example_category: Category,
+      example_products: List[Product]
+):
+    """Check whether category remain after removing product"""
+    example_category.products = example_products
+
+    db_session.add(example_category)
+    db_session.commit()
+
+    db_session.delete(example_products[0])
+    db_session.commit()
+
+    categories = db_session.query(Category).all()
+
+    assert len(categories) == 1
+
+
+def test_product_category_relation_delete_category(
+      db_session: Session,
+      example_category: Category,
+      example_products: List[Product]
+):
+    """Check whether products remain after removing category"""
+    example_category.products = example_products
+
+    db_session.add(example_category)
+    db_session.commit()
+
+    db_session.delete(example_category)
+    db_session.commit()
+
+    products = db_session.query(Product).all()
+
     assert len(products) == 3
