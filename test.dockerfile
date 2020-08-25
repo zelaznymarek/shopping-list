@@ -1,4 +1,4 @@
 FROM sl_base
 
-COPY requirements-dev.txt ./
+COPY backend/requirements-dev.txt ./
 RUN pip install -r requirements-dev.txt

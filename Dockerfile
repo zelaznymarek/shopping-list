@@ -6,5 +6,5 @@ WORKDIR /src
 RUN apt update && \
     apt install -y postgresql-client
 
-COPY requirements.txt ./
+COPY backend/requirements.txt ./
 RUN pip install -r requirements.txt

@@ -1,12 +1,12 @@
 from fastapi import FastAPI
 import uvicorn
 
+from app.routers import health
+
+
 app = FastAPI()
 
-
-@app.get('/health')
-async def health_check():
-    return {'alive': 'True'}
+app.include_router(health.router, prefix='/health', tags=['health checks'])
 
 
 if __name__ == "__main__":

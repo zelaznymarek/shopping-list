@@ -17,3 +17,13 @@ def db_session():
 
     close_all_sessions()
     Base.metadata.drop_all(engine)
+
+
+@pytest.fixture
+def invalid_db_session():
+    engine = create_engine('postgresql://postgres:postgres@invalid_host:5432/db')
+    session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+    yield session()
+
+    close_all_sessions()

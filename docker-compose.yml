@@ -15,13 +15,13 @@ services:
   backend:
     image: sl_base
     build:
-      context: backend
+      context: .
       dockerfile: Dockerfile
     command: bash -c "alembic -c app/alembic.ini upgrade head && python app/main.py"
     ports:
       - '8888:8888'
     volumes:
-      - ./backend:/app/:cached
+      - ./backend:/src/:cached
     environment:
       PYTHONPATH: .
       DATABASE_URL: 'postgresql://postgres:postgres@postgres:5432/shopping'
