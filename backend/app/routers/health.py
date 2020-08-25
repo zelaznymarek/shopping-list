@@ -5,7 +5,9 @@ from sqlalchemy.exc import DatabaseError
 
 
 from app.db.session import get_db
+from app.settings import get_logger
 
+logger = get_logger(__name__)
 router = APIRouter()
 
 
@@ -21,7 +23,7 @@ class Health(BaseModel):
 )
 def health_check(db: Session = Depends(get_db)):
     """
-    Check if listed services are in healthy state:
+    Check if listed services are in a healthy state:
     - **database**
     """
     health = Health()
@@ -35,6 +37,6 @@ def is_db_healthy(db):
     try:
         return db.execute('SELECT 1').first() == (1,)
     except DatabaseError as exc:
-        print(f'Database error: {exc}')
+        logger.error(f'Database error: {exc.orig}')
 
     return False
