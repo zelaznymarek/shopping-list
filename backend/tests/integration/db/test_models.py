@@ -11,7 +11,7 @@ from app.db.models import User, List as ShoppingList, Product, Category
 def example_user():
     return User(
         email='example@email.com',
-        name='Example',
+        username='Example',
         hashed_password='secret'
     )
 
@@ -45,7 +45,7 @@ def test_user(db_session: Session, example_user: User):
 
     user: User = results[0]
 
-    assert user.name == example_user.name
+    assert user.username == example_user.username
     assert user.email == example_user.email
     assert user.is_admin is False
     assert user.lists == []

@@ -19,7 +19,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String(50), unique=True, index=True, nullable=False)
-    name = Column(String(50), nullable=False)
+    username = Column(String(50), nullable=False)
     hashed_password = Column(String(100), nullable=False)
     is_admin = Column(Boolean, default=False)
     lists = relationship('List', back_populates='user', cascade='all, delete', passive_deletes=True)
