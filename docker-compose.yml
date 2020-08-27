@@ -17,7 +17,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: bash -c "alembic -c app/alembic.ini upgrade head && python app/main.py"
+    command: bash -c "alembic upgrade head && python app/initial_data.py && python app/main.py"
     ports:
       - '8888:8888'
     volumes:
@@ -25,6 +25,9 @@ services:
     environment:
       PYTHONPATH: .
       DATABASE_URL: 'postgresql://postgres:postgres@postgres:5432/shopping'
+      LOG_LEVEL: 'debug'
+      FIRST_ADMIN: 'admin'
+      FIRST_ADMIN_PASSWORD: 'admin_pass'
     depends_on:
       - 'postgres'
 

@@ -14,3 +14,6 @@ def get_logger(name):
 
 
 SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
+
+FIRST_ADMIN = os.getenv('FIRST_ADMIN')
+FIRST_ADMIN_PASSWORD = os.getenv('FIRST_ADMIN_PASSWORD')

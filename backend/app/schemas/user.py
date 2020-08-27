@@ -1,13 +1,23 @@
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel
 
+from app.schemas.list import ShoppingList
 
-class User(BaseModel):
-    email: Optional[str]
+
+class UserBase(BaseModel):
+    email: str
     username: str
-    is_admin: bool
+    is_admin: Optional[bool] = False
 
 
-class UserInDB(User):
-    hashed_password: str
+class UserCreate(UserBase):
+    password: str
+
+
+class User(UserBase):
+    id: int
+    lists: List[ShoppingList] = []
+
+    class Config:
+        orm_mode = True

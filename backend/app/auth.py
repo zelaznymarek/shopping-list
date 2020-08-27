@@ -7,13 +7,14 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from jose import jwt, JWTError
 
-from app.schemas import User, UserInDB, TokenData
+from app.schemas import TokenData
+from app.db.models import User
 from app.db.session import get_db
 
 SECRET_KEY = '1be3773b21c25858e2a5a1cbcd058dc267cc81c1ee1e499984c77b74db01bf62'
 ALGORITHM = 'HS256'
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/login')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 
@@ -25,15 +26,12 @@ def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def get_user(username, db_session: Session = Depends(get_db)):
-    user_dict = db_session.query(User).filter(User.username == username).first()
-
-    if user_dict:
-        return UserInDB(**user_dict)
+def get_user(db_session, username):
+    return db_session.query(User).filter(User.username == username).first()
 
 
-def authenticate_user(username: str, password: str):
-    user = get_user(username)
+def authenticate_user(db, username: str, password: str):
+    user = get_user(db, username)
 
     if not user:
         return False
@@ -63,7 +61,7 @@ def decode_token(token):
     )
 
 
-def get_current_user(token: str = Depends(oauth2_scheme)):
+def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Invalid authentication credentials',
@@ -81,7 +79,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     except JWTError:
         raise credentials_exception
 
-    user = get_user(token_data.username)
+    user = get_user(db, token_data.username)
 
     if user is None:
         raise credentials_exception
@@ -93,6 +91,6 @@ def get_current_admin_user(current_user: User = Depends(get_current_user)):
     user = current_user
 
     if not user.is_admin:
-        raise HTTPException(status_code=400, detail='The user does not have enough privileges')
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='The user does not have enough privileges')
 
     return user
