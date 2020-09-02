@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.auth import get_current_user, get_current_admin_user
 from app.db import models
 from app.db.session import get_db
-from app import schemas
+from app.schemas import user as schemas
 from app.crud.user import create, remove, get_all
 
 router = APIRouter()
@@ -25,7 +25,7 @@ def add(
       current_user: models.User = Depends(get_current_admin_user)
 ):
     """Create a new user."""
-    db_user = db_session.query(models.User).filter(models.User.username == new_user.username).first()
+    db_user = db_session.query(models.User).filter(models.User.email == new_user.email).first()
 
     if db_user:
         raise HTTPException(
@@ -37,18 +37,18 @@ def add(
 
 
 @router.delete('/', status_code=status.HTTP_204_NO_CONTENT, responses={404: {}})
-def delete_by_username(
+def delete_by_email(
       user_to_delete: schemas.UserDelete,
       db_session: Session = Depends(get_db),
       current_user: models.User = Depends(get_current_admin_user)
 ):
-    """Delete a user"""
-    db_user = db_session.query(models.User).filter(models.User.username == user_to_delete.username).first()
+    """Delete a user by email"""
+    db_user = db_session.query(models.User).filter(models.User.email == user_to_delete.email).first()
 
     if not db_user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f'User "{user_to_delete.username}" not found.'
+            detail=f'User with email "{user_to_delete.email}" not found.'
         )
 
     remove(db_session, db_user)

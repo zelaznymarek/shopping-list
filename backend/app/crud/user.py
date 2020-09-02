@@ -9,7 +9,7 @@ from app.db.models import User
 
 def create(db_session: Session, new_user: UserCreate) -> User:
     user = User(
-        username=new_user.username,
+        username=new_user.username or new_user.email.split('@')[0],
         email=new_user.email,
         hashed_password=get_password_hash(new_user.password),
         is_admin=new_user.is_admin

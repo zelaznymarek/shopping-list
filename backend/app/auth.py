@@ -26,12 +26,12 @@ def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def get_user(db_session, username):
-    return db_session.query(User).filter(User.username == username).first()
+def get_user(db_session, email):
+    return db_session.query(User).filter(User.email == email).first()
 
 
-def authenticate_user(db, username: str, password: str):
-    user = get_user(db, username)
+def authenticate_user(db, *, email: str, password: str):
+    user = get_user(db, email)
 
     if not user:
         return False

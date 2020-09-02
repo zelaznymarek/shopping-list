@@ -1,4 +1,4 @@
-from app.routers.health import is_db_healthy
+from app.endpoints.health import is_db_healthy
 
 
 def test_is_db_healthy_returns_true(db_session):

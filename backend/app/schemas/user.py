@@ -1,17 +1,18 @@
 from typing import Optional, List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 from app.schemas.list import ShoppingList
 
 
 class UserBase(BaseModel):
-    email: str
-    username: str
-    is_admin: Optional[bool] = False
+    email: Optional[EmailStr] = None
+    username: Optional[str] = None
+    is_admin: Optional[bool] = None
 
 
 class UserCreate(UserBase):
+    email: EmailStr
     password: str
 
 
@@ -24,4 +25,8 @@ class User(UserBase):
 
 
 class UserDelete(BaseModel):
-    username: str
+    email: EmailStr
+
+
+class UserUpdate(UserBase):
+    password: Optional[str] = None

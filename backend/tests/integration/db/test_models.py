@@ -168,6 +168,21 @@ def test_list_user_cascade_delete(db_session: Session, example_user: User, examp
     assert len(lists) == 0
 
 
+def test_list_delete(db_session: Session, example_user: User, example_list: ShoppingList):
+    """Check whether deleted list disappears from user lists."""
+    example_list.user = example_user
+
+    db_session.add(example_list)
+    db_session.commit()
+
+    assert len(example_user.lists) == 1
+
+    db_session.delete(example_list)
+    db_session.commit()
+
+    assert len(example_user.lists) == 0
+
+
 @pytest.fixture
 def example_products():
     return [

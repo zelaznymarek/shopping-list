@@ -1,4 +1,4 @@
-from .user import User, UserCreate, UserDelete
+from .user import User, UserCreate, UserDelete, UserUpdate
 from .list import ShoppingList, ShoppingListCreate
 from .product import Product, ProductCreate
 from .category import Category, CategoryCreate
