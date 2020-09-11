@@ -26,12 +26,12 @@ def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def get_user(db_session, email):
+def get_user(db_session: Session, email: str):
     return db_session.query(User).filter(User.email == email).first()
 
 
-def authenticate_user(db, *, email: str, password: str):
-    user = get_user(db, email)
+def authenticate_user(db_session: Session, *, email: str, password: str):
+    user = get_user(db_session, email)
 
     if not user:
         return False
@@ -41,45 +41,51 @@ def authenticate_user(db, *, email: str, password: str):
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    to_encode = data.copy()
-
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
 
-    to_encode.update({'exp': expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    data.update({'exp': expire})
+    encoded_jwt = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
 
     return encoded_jwt
 
 
-def decode_token(token):
-    return User(
-        username=token + 'decoded',
-        email='ja@marek.com',
-    )
+def is_decoded_token_valid(decoded_token: dict) -> bool:
+    username = decoded_token.get('sub')
+    expiration = decoded_token.get('exp')
+
+    if expiration is None:
+        return False
+
+    if expiration < datetime.utcnow().timestamp():
+        return False
+
+    if username is None:
+        return False
+
+    return True
 
 
-def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+def get_current_user(db_session: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail='Invalid authentication credentials',
-            headers={'WWW-Authenticate': 'Bearer'}
-        )
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail='Invalid authentication credentials',
+        headers={'WWW-Authenticate': 'Bearer'}
+    )
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username = payload.get('sub')
 
-        if username is None:
+        if not is_decoded_token_valid(payload):
             raise credentials_exception
 
-        token_data = TokenData(username=username)
+        token_data = TokenData(username=payload.get('sub'))
     except JWTError:
         raise credentials_exception
 
-    user = get_user(db, token_data.username)
+    user = get_user(db_session, token_data.username)
 
     if user is None:
         raise credentials_exception
