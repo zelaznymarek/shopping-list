@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy.orm import Session
 
 from app.auth import get_password_hash
-from app.schemas.user import UserCreate
+from app.schemas.user import UserCreate, UserUpdate
 from app.db.models import User
 
 
@@ -21,10 +21,14 @@ def create(db_session: Session, new_user: UserCreate) -> User:
     return user
 
 
-def remove(db_session: Session, user_to_delete: User):
+def remove(db_session: Session, user_to_delete: User) -> None:
     db_session.delete(user_to_delete)
     db_session.commit()
 
 
 def get_all(db_session: Session) -> List[User]:
     return db_session.query(User).all()
+
+
+def update(db_session: Session, user_to_update: dict) -> UserUpdate:
+    """Implement this"""
