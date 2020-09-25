@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
@@ -21,10 +21,30 @@ def create(db_session: Session, new_user: UserCreate) -> User:
     return user
 
 
-def remove(db_session: Session, user_to_delete: User):
+def remove(db_session: Session, user_to_delete: User) -> None:
     db_session.delete(user_to_delete)
     db_session.commit()
 
 
 def get_all(db_session: Session) -> List[User]:
     return db_session.query(User).all()
+
+
+def get_by_email(db_session: Session, email: str) -> Optional[User]:
+    return db_session.query(User).filter(User.email == email).first()
+
+
+def update(db_session: Session, *, db_user: User, user_to_update: dict, updated_by_admin: bool) -> User:
+    if not updated_by_admin:
+        try:
+            del user_to_update['is_admin']
+        except KeyError:
+            pass
+
+    for field, value in user_to_update.items():
+        setattr(db_user, field, value)
+
+    db_session.add(db_user)
+    db_session.commit()
+
+    return db_user
