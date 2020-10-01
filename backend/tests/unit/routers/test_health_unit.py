@@ -21,4 +21,4 @@ def test_health_check_when_db_is_dead(_is_healthy):
 def test_is_db_healthy_logs_error(logger_mock, invalid_db_session):
     is_db_healthy(invalid_db_session)
 
-    logger_mock.error.assert_called_once_with('Database error: could not translate host name "invalid_host" to address: Name or service not known\n')
+    logger_mock.error.assert_called_once_with('Database error: could not translate host name "invalid_host" to address: No address associated with hostname\n')
