@@ -17,10 +17,8 @@ def get_one(
         category_id: int,
         current_user: models.User = Depends(get_current_user),
         db_session: Session = Depends(get_db)
-) -> schemas.Category:
-    db_category = crud.get_by_id(db_session, category_id)
-
-    if not db_category:
+):
+    if not (db_category := crud.get_by_id(db_session, category_id)):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f'The category with id "{category_id}" not found.'
@@ -30,7 +28,10 @@ def get_one(
 
 
 @router.get('/', response_model=List[schemas.Category])
-def get_all(current_user: models.User = Depends(get_current_user), db_session: Session = Depends(get_db)) -> List[schemas.Category]:
+def get_all(
+        current_user: models.User = Depends(get_current_user),
+        db_session: Session = Depends(get_db)
+):
     return crud.get_list(db_session)
 
 
@@ -40,9 +41,7 @@ def add(
         current_user: models.User = Depends(get_current_user),
         db_session: Session = Depends(get_db)
 ) -> schemas.Category:
-    db_category = db_session.query(models.Category).filter(models.Category.name == new_category.name).first()
-
-    if db_category:
+    if crud.get_by_name(db_session, new_category.name):
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST,
             detail='The category with this name already exists in the system.'
@@ -57,15 +56,13 @@ def remove(
         current_user: models.User = Depends(get_current_user),
         db_session: Session = Depends(get_db)
 ):
-    db_category = crud.get_by_id(db_session, category_id)
-
-    if not db_category:
+    if not (db_category := crud.get_by_id(db_session, category_id)):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f'The category with id "{category_id}" not found.'
         )
 
-    return crud.remove_by_id(db_session, db_category)
+    return crud.remove(db_session, db_category)
 
 
 @router.put('/{category_id}', response_model=schemas.Category)
@@ -75,9 +72,7 @@ def update(
         current_user: models.User = Depends(get_current_user),
         db_session: Session = Depends(get_db)
 ):
-    db_category = crud.get_by_id(db_session, category_id)
-
-    if not db_category:
+    if not (db_category := crud.get_by_id(db_session, category_id)):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f'The category with id "{category_id}" not found.'

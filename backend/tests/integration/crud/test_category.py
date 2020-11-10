@@ -2,7 +2,7 @@ import pytest
 
 from sqlalchemy.orm import Session
 
-from app.crud.category import create, remove_by_id, update
+from app.crud.category import create, remove, update
 from app.db.models import Category
 
 
@@ -29,7 +29,7 @@ def example_category(db_session: Session):
 
 
 def test_remove_by_id(db_session: Session, example_category: Category):
-    remove_by_id(db_session, example_category)
+    remove(db_session, example_category)
 
     assert len(db_session.query(Category).all()) == 0
 

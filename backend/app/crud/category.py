@@ -5,8 +5,12 @@ from sqlalchemy.orm.session import Session
 from app.db import models
 
 
-def get_by_id(db_session: Session, category_id) -> Optional[models.Category]:
+def get_by_id(db_session: Session, category_id: int) -> Optional[models.Category]:
     return db_session.query(models.Category).filter(models.Category.id == category_id).first()
+
+
+def get_by_name(db_session: Session, category_name) -> Optional[models.Category]:
+    return db_session.query(models.Category).filter(models.Category.name == category_name).first()
 
 
 def get_list(db_session: Session) -> List[Optional[models.Category]]:
@@ -22,7 +26,7 @@ def create(db_session: Session, category_dict: dict) -> models.Category:
     return category
 
 
-def remove_by_id(db_session: Session, category: models.Category):
+def remove(db_session: Session, category: models.Category):
     db_session.delete(category)
     db_session.commit()
 
