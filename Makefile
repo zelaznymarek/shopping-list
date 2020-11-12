@@ -27,6 +27,5 @@ test.abort:
 
 test:
 	$(DC) -f test-docker-compose.yml up -d test_postgres
-	$(DC) -f test-docker-compose.yml up -d test_app
 	$(DC) -f test-docker-compose.yml run --rm test_backend
 	$(DC) -f test-docker-compose.yml down

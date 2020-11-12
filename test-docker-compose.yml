@@ -14,7 +14,7 @@ services:
     build:
       context: .
       dockerfile: test.dockerfile
-    command: bash -c "pytest -vvvvs"
+    command: bash -c "alembic upgrade head && pytest -vvvvs"
     volumes:
       - type: bind
         source: ./backend
@@ -23,7 +23,7 @@ services:
       PYTHONPATH: .
       DATABASE_URL: 'postgresql://postgres:postgres@test_postgres:5432/shopping'
     depends_on:
-      - test_app
+      - test_postgres
 
 volumes:
   test-db-data:

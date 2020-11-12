@@ -1,5 +1,3 @@
-import requests
-
 from sqlalchemy.orm import Session
 
 from app.db.models import User
@@ -9,7 +7,7 @@ from app.auth import pwd_context
 api_prefix = 'localhost:3000/categories'
 
 
-def request_as_user(db_session: Session, url):
+def get_token(db_session: Session, client):
     user = User(
         email='test@user.cc',
         username='test',
@@ -19,9 +17,13 @@ def request_as_user(db_session: Session, url):
     db_session.add(user)
     db_session.commit()
 
-    login_response = requests.post('localhost:8888/login', data={'email': user.email, 'password': 'passwd'})
+    login_response = client.post('/login', data={'username': user.email, 'password': 'passwd'})
+
+    return login_response.json()['access_token']
+
+
+def test_get_category(db_session, client):
+    token = get_token(db_session, client)
+
+    res = client.get('/categories', headers={'WWW-Authenticate': f'Bearer {token}'})
     breakpoint()
-
-
-def test_get_category(db_session):
-    request_as_user(db_session, 'url')

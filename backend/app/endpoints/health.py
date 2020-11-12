@@ -1,13 +1,10 @@
 from fastapi import APIRouter, Depends, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import DatabaseError
-
 
 from app.db.session import get_db
-from app.settings import get_logger
+from app.health_checks import is_db_healthy
 
-logger = get_logger(__name__)
 router = APIRouter()
 
 
@@ -31,12 +28,3 @@ def health_check(db: Session = Depends(get_db)):
     health.database = is_db_healthy(db)
 
     return health
-
-
-def is_db_healthy(db):
-    try:
-        return db.execute('SELECT 1').first() == (1,)
-    except DatabaseError as exc:
-        logger.error(f'Database error: {exc.orig}')
-
-    return False

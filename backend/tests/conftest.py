@@ -1,8 +1,10 @@
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, close_all_sessions
+from fastapi.testclient import TestClient
 
 from app import settings
+from app.main import app
 from app.db.session import Base
 
 
@@ -27,3 +29,8 @@ def invalid_db_session():
     yield session()
 
     close_all_sessions()
+
+
+@pytest.fixture
+def client():
+    return TestClient(app)
