@@ -25,11 +25,6 @@ def example_list():
 def example_product():
     return Product(name='chocolate')
 
-
-@pytest.fixture
-def example_category():
-    return Category(name='meat')
-
 # Test models
 
 

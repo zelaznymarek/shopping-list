@@ -155,4 +155,4 @@ def test_get_current_user_invalid_token(example_user):
 
     assert exc.value.status_code == 401
     assert exc.value.detail == 'Invalid authentication credentials'
-    assert exc.value.headers == {'WWW-Authenticate': 'Bearer'}
+    assert exc.value.headers == {'Authenticate': 'Bearer'}

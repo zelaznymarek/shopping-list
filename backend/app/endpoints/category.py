@@ -9,7 +9,7 @@ from app.db import models
 from app.schemas import category as schemas
 from app.crud import category as crud
 
-router = APIRouter()
+router = APIRouter(redirect_slashes=False)
 
 
 @router.get('/{category_id}', response_model=schemas.Category, responses={status.HTTP_404_NOT_FOUND: {}})
@@ -32,10 +32,10 @@ def get_all(
         current_user: models.User = Depends(get_current_user),
         db_session: Session = Depends(get_db)
 ):
-    return crud.get_list(db_session)
+    return crud.get_many(db_session)
 
 
-@router.post('/', response_model=schemas.Category, responses={status.HTTP_400_BAD_REQUEST: {}})
+@router.post('/', response_model=schemas.Category, responses={status.HTTP_422_UNPROCESSABLE_ENTITY: {}})
 def add(
         new_category: schemas.CategoryCreate,
         current_user: models.User = Depends(get_current_user),

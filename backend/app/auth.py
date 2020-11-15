@@ -72,7 +72,7 @@ def get_current_user(db_session: Session = Depends(get_db), token: str = Depends
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail='Invalid authentication credentials',
-        headers={'WWW-Authenticate': 'Bearer'}
+        headers={'Authenticate': 'Bearer'}
     )
 
     try:

@@ -13,7 +13,7 @@ def get_by_name(db_session: Session, category_name) -> Optional[models.Category]
     return db_session.query(models.Category).filter(models.Category.name == category_name).first()
 
 
-def get_list(db_session: Session) -> List[Optional[models.Category]]:
+def get_many(db_session: Session) -> List[models.Category]:
     return db_session.query(models.Category).all()
 
 
