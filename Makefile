@@ -2,6 +2,10 @@ DC = docker-compose
 
 build:
 	$(DC) build
+	$(DC) build
+
+build.scratch:
+	$(DC) build --no-cache
 
 up:
 	$(DC) up
@@ -12,9 +16,12 @@ start:
 stop:
 	$(DC) down
 
-restart: stop start
+stop.unmount:
+	$(DC) down -v
 
-restart.scratch: stop build start
+restart: stop build start
+
+restart.scratch: stop.unmount build.scratch start
 
 status:
 	$(DC) ps
