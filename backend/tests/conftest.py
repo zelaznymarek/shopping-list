@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from app import settings
 from app.main import app
 from app.db.session import Base
-from app.db.models import Category
+from app.db.models import Category, Product
 
 
 @pytest.fixture
@@ -48,3 +48,26 @@ def category(db_session, example_category):
     db_session.commit()
 
     return example_category
+
+
+@pytest.fixture
+def sweets_category(db_session):
+    sweets = Category(name='sweets')
+
+    db_session.add(sweets)
+    db_session.commit()
+
+    return sweets
+
+
+@pytest.fixture
+def example_product(category):
+    return Product(name='Chicken', category=category)
+
+
+@pytest.fixture
+def product(db_session, example_product):
+    db_session.add(example_product)
+    db_session.commit()
+
+    return example_product

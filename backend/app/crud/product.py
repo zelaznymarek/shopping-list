@@ -33,7 +33,8 @@ def remove(db_session: Session, product: models.Product):
 
 def update(db_session: Session, *, db_product: models.Product, product_to_update: dict) -> models.Product:
     for field, value in product_to_update.items():
-        setattr(db_product, field, value)
+        if value:
+            setattr(db_product, field, value)
 
     db_session.add(db_product)
     db_session.commit()

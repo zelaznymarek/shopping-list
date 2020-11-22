@@ -14,14 +14,14 @@ router = APIRouter()
 
 @router.get('/{product_id}', response_model=schemas.Product, responses={status.HTTP_404_NOT_FOUND: {}})
 def get_one(
-        category_id: int,
+        product_id: int,
         current_user: models.User = Depends(get_current_user),
         db_session: Session = Depends(get_db)
 ):
-    if not (db_product := crud.get_by_id(db_session, category_id)):
+    if not (db_product := crud.get_by_id(db_session, product_id)):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f'The product with id "{category_id}" not found.'
+            detail=f'The product with id "{product_id}" not found.'
         )
 
     return db_product
@@ -68,7 +68,7 @@ def remove(
 @router.put('/{product_id}', response_model=schemas.Product)
 def update(
         product_id: int,
-        product_to_update: schemas.ProductCreate,
+        product_to_update: schemas.ProductUpdate,
         current_user: models.User = Depends(get_current_user),
         db_session: Session = Depends(get_db)
 ):
@@ -79,4 +79,3 @@ def update(
         )
 
     return crud.update(db_session, db_product=db_product, product_to_update=product_to_update.dict())
-
