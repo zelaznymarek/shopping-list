@@ -1,0 +1,29 @@
+version: '3.7'
+services:
+  test_postgres:
+    image: postgres:12
+    restart: on-failure
+    environment:
+      POSTGRES_DB: shopping
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - test-db-data:/var/lib/postgresql/data:cached
+
+  test_backend:
+    build:
+      context: .
+      dockerfile: test.dockerfile
+    command: bash -c "alembic upgrade head && pytest -vvvvs"
+    volumes:
+      - type: bind
+        source: ./backend
+        target: /src
+    environment:
+      PYTHONPATH: .
+      DATABASE_URL: 'postgresql://postgres:postgres@test_postgres:5432/shopping'
+    depends_on:
+      - test_postgres
+
+volumes:
+  test-db-data:
