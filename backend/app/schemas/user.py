@@ -29,4 +29,4 @@ class UserDelete(BaseModel):
 
 
 class UserUpdate(UserBase):
-    password: Optional[str] = None
+    pass

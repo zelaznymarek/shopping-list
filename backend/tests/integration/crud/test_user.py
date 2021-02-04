@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.crud.user import create, remove, get_all
+from app.crud.user import create, remove, get_all, update
 from app.schemas import UserCreate
 from app.db.models import User
 
@@ -79,3 +79,59 @@ def test_get_all(db_session: Session):
     users = get_all(db_session)
 
     assert len(users) == 2
+
+
+def test_update_by_regular_user(db_session: Session):
+    example_user = User(
+        email='example@user.cc',
+        username='example',
+        hashed_password='this_is_hashed',
+        is_admin=False
+    )
+
+    db_session.add(example_user)
+    db_session.commit()
+
+    user_dict = {
+        'username': 'different',
+        'is_admin': True
+    }
+
+    db_user = db_session.query(User).first()
+
+    updated_user = update(db_session, db_user=db_user, user_to_update=user_dict, updated_by_admin=False)
+
+    db_user: User = db_session.query(User).first()
+
+    assert db_user.email == example_user.email == updated_user.email
+    assert db_user.hashed_password == example_user.hashed_password == updated_user.hashed_password
+    assert db_user.is_admin == example_user.is_admin == updated_user.is_admin
+    assert db_user.username == user_dict['username'] == updated_user.username
+
+
+def test_update_by_admin(db_session: Session):
+    example_user = User(
+        email='example@user.cc',
+        username='example',
+        hashed_password='this_is_hashed',
+        is_admin=False
+    )
+
+    db_session.add(example_user)
+    db_session.commit()
+
+    user_dict = {
+        'username': 'different',
+        'is_admin': True
+    }
+
+    db_user = db_session.query(User).first()
+
+    updated_user = update(db_session, db_user=db_user, user_to_update=user_dict, updated_by_admin=True)
+
+    db_user: User = db_session.query(User).first()
+
+    assert db_user.email == example_user.email == updated_user.email
+    assert db_user.hashed_password == example_user.hashed_password == updated_user.hashed_password
+    assert db_user.is_admin == user_dict['is_admin'] == updated_user.is_admin
+    assert db_user.username == user_dict['username'] == updated_user.username
