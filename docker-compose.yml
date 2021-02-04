@@ -2,7 +2,7 @@ version: '3.7'
 services:
   postgres:
     image: postgres:12
-    restart: always
+    restart: on-failure
     environment:
       POSTGRES_DB: shopping
       POSTGRES_USER: postgres
@@ -29,7 +29,7 @@ services:
       FIRST_ADMIN: 'admin'
       FIRST_ADMIN_PASSWORD: 'admin_pass'
     depends_on:
-      - 'postgres'
+      - postgres
 
 volumes:
   db-data:

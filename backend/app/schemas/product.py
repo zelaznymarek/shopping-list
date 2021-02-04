@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -10,8 +12,13 @@ class ProductCreate(ProductBase):
     pass
 
 
+class ProductUpdate(BaseModel):
+    name: Optional[str]
+    category_id: Optional[int]
+
+
 class Product(ProductBase):
     id: int
 
     class Config:
-        orm_mode: True
+        orm_mode = True

@@ -2,7 +2,7 @@ version: '3.7'
 services:
   test_postgres:
     image: postgres:12
-    restart: always
+    restart: on-failure
     environment:
       POSTGRES_DB: shopping
       POSTGRES_USER: postgres
@@ -14,7 +14,7 @@ services:
     build:
       context: .
       dockerfile: test.dockerfile
-    command: bash -c "pytest -vvvvs"
+    command: bash -c "alembic upgrade head && pytest -vvvvs"
     volumes:
       - type: bind
         source: ./backend
