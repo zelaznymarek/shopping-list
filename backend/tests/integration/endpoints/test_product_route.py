@@ -1,14 +1,10 @@
 import pytest
 
-from tests.integration.endpoints.test_category_route import get_token
-
 
 api_prefix = 'localhost:3000/products'
 
 
-def test_get_products_returns_all(db_session, client, product):
-    token = get_token(db_session, client)
-
+def test_get_products_returns_all(client, product, token):
     res = client.get('/products', headers={'Authorization': f'Bearer {token}'})
 
     assert len(res.json()) == 1
@@ -33,9 +29,7 @@ def test_get_products_unavailable_for_unauthorised(client, headers):
     assert res.status_code == 401
 
 
-def test_get_product_returns_one(db_session, client, product):
-    token = get_token(db_session, client)
-
+def test_get_product_returns_one(client, product, token):
     res = client.get(f'/products/{product.id}', headers={'Authorization': f'Bearer {token}'})
 
     response_product = res.json()
@@ -45,9 +39,7 @@ def test_get_product_returns_one(db_session, client, product):
     assert response_product['name'] == product.name
 
 
-def test_get_product_returns_not_found(db_session, client):
-    token = get_token(db_session, client)
-
+def test_get_product_returns_not_found(client, token):
     res = client.get(f'/products/1', headers={'Authorization': f'Bearer {token}'})
 
     assert res.status_code == 404
@@ -65,11 +57,10 @@ def test_get_product_unavailable_for_unauthorised(client, headers):
     assert res.status_code == 401
 
 
-def test_add_product(db_session, client, category):
-    token = get_token(db_session, client)
+def test_add_product(client, category_meat, token):
     product_data = {
         'name': 'chicken',
-        'category_id': category.id
+        'category_id': category_meat.id
     }
 
     res = client.post(
@@ -88,9 +79,7 @@ def test_add_product(db_session, client, category):
     assert returned_product['category_id'] == product_data['category_id']
 
 
-def test_add_product_returns_unprocessable_entity(db_session, client):
-    token = get_token(db_session, client)
-
+def test_add_product_returns_unprocessable_entity(client, token):
     res = client.post(
         '/products',
         json={},
@@ -113,18 +102,14 @@ def test_get_product_unavailable_for_unauthorised(client, headers):
     assert res.status_code == 401
 
 
-def test_remove_product(db_session, client, product):
-    token = get_token(db_session, client)
-
+def test_remove_product(client, product, token):
     res = client.delete(f'/products/{product.id}', headers={'Authorization': f'Bearer {token}'})
 
     assert res.status_code == 200
     assert res.json() is None
 
 
-def test_remove_product_returns_not_found(db_session, client):
-    token = get_token(db_session, client)
-
+def test_remove_product_returns_not_found(client, token):
     res = client.delete('/products/1', headers={'Authorization': f'Bearer {token}'})
 
     assert res.status_code == 404
@@ -142,8 +127,7 @@ def test_remove_product_unavailable_for_unauthorised(client, headers):
     assert res.status_code == 401
 
 
-def test_update_product_name(db_session, client, product):
-    token = get_token(db_session, client)
+def test_update_product_name(client, product, token):
     product_to_update = {
         'name': 'pork'
     }
@@ -162,10 +146,9 @@ def test_update_product_name(db_session, client, product):
     assert updated['category_id'] == product.category_id
 
 
-def test_update_product_category(db_session, client, product, sweets_category):
-    token = get_token(db_session, client)
+def test_update_product_category(client, product, category_sweets, token):
     product_to_update = {
-        'category_id': sweets_category.id
+        'category_id': category_sweets.id
     }
 
     res = client.put(
@@ -179,11 +162,10 @@ def test_update_product_category(db_session, client, product, sweets_category):
     updated = res.json()
     assert updated['id'] == product.id
     assert updated['name'] == product.name
-    assert updated['category_id'] == product_to_update['category_id']
+    assert updated['category_id'] == category_sweets.id
 
 
-def test_update_product_returns_not_found(db_session, client):
-    token = get_token(db_session, client)
+def test_update_product_returns_not_found(client, token):
     product_to_update = {
         'name': 'changed'
     }

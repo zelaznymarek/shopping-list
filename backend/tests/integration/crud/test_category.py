@@ -18,18 +18,18 @@ def test_create(db_session: Session):
     assert category.products == []
 
 
-def test_remove_by_id(db_session: Session, category: Category):
-    remove(db_session, category)
+def test_remove_by_id(db_session: Session, category_meat: Category):
+    remove(db_session, category_meat)
 
     assert len(db_session.query(Category).all()) == 0
 
 
-def test_update(db_session: Session, category: Category):
+def test_update(db_session: Session, category_meat: Category):
     updated_category = {'name': 'updated'}
 
-    result = update(db_session, db_category=category, category_to_update=updated_category)
+    result = update(db_session, db_category=category_meat, category_to_update=updated_category)
 
-    from_db = db_session.query(Category).filter(Category.id == category.id).first()
+    from_db = db_session.query(Category).filter(Category.id == category_meat.id).first()
 
-    assert result.id == category.id == from_db.id
+    assert result.id == category_meat.id == from_db.id
     assert result.name == updated_category['name'] == from_db.name

@@ -1,12 +1,13 @@
 import pytest
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, close_all_sessions
+from sqlalchemy.orm import sessionmaker, close_all_sessions, Session
 from fastapi.testclient import TestClient
 
 from app import settings
 from app.main import app
 from app.db.session import Base
-from app.db.models import Category, Product
+from app.db.models import Category, Product, User
+from app.auth import pwd_context
 
 
 @pytest.fixture
@@ -38,31 +39,49 @@ def client():
 
 
 @pytest.fixture
-def example_category():
-    return Category(name='meat')
+def token(db_session: Session, client):
+    user = User(
+        email='test@user.cc',
+        username='test',
+        hashed_password=pwd_context.hash('passwd')
+    )
 
-
-@pytest.fixture
-def category(db_session, example_category):
-    db_session.add(example_category)
+    db_session.add(user)
     db_session.commit()
 
-    return example_category
+    login_response = client.post('/login', data={'username': user.email, 'password': 'passwd'})
+    body = login_response.json()
+
+    return body['access_token']
 
 
 @pytest.fixture
-def sweets_category(db_session):
-    sweets = Category(name='sweets')
+def example_categories():
+    return [
+        Category(name='meat'),
+        Category(name='sweets'),
+    ]
 
-    db_session.add(sweets)
+
+@pytest.fixture
+def category_meat(db_session, example_categories):
+    db_session.add(example_categories[0])
     db_session.commit()
 
-    return sweets
+    return example_categories[0]
 
 
 @pytest.fixture
-def example_product(category):
-    return Product(name='Chicken', category=category)
+def category_sweets(db_session, example_categories):
+    db_session.add(example_categories[1])
+    db_session.commit()
+
+    return example_categories[1]
+
+
+@pytest.fixture
+def example_product(category_meat):
+    return Product(name='Chicken', category=category_meat)
 
 
 @pytest.fixture

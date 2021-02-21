@@ -22,8 +22,12 @@ def example_list():
 
 
 @pytest.fixture
-def example_product():
-    return Product(name='chocolate')
+def example_products():
+    return [
+        Product(name='bread'),
+        Product(name='milk'),
+        Product(name='eggs'),
+    ]
 
 # Test models
 
@@ -65,7 +69,8 @@ def test_list(db_session: Session):
     assert shopping_list.products == []
 
 
-def test_product(db_session: Session, example_product: Product):
+def test_product(db_session: Session, example_products: List[Product]):
+    example_product = example_products[0]
     results = db_session.query(Product).all()
     assert len(results) == 0
 
@@ -82,19 +87,19 @@ def test_product(db_session: Session, example_product: Product):
     assert product.category is None
 
 
-def test_category(db_session: Session, example_category: Category):
+def test_category(db_session: Session, example_categories: List[Category]):
     results = db_session.query(Category).all()
     assert len(results) == 0
 
-    db_session.add(example_category)
+    db_session.add(example_categories[0])
     db_session.commit()
 
     results = db_session.query(Category).all()
     assert len(results) == 1
 
-    category: Category = results[0]
+    category = results[0]
 
-    assert category.name == example_category.name
+    assert category.name == example_categories[0].name
     assert category.products == []
 
 
@@ -178,15 +183,6 @@ def test_list_delete(db_session: Session, example_user: User, example_list: Shop
     assert len(example_user.lists) == 0
 
 
-@pytest.fixture
-def example_products():
-    return [
-        Product(name='bread'),
-        Product(name='milk'),
-        Product(name='eggs'),
-    ]
-
-
 def test_list_products_relation(db_session: Session, example_list: ShoppingList, example_products: List[Product]):
     """Check whether products are being added to the list"""
     example_list.products = example_products
@@ -205,7 +201,7 @@ def test_list_products_relation(db_session: Session, example_list: ShoppingList,
     assert shopping_list.products == example_products
 
 
-def test_list_delete(db_session: Session, example_list: ShoppingList, example_products: List[Product]):
+def test_list_delete_keeps_product(db_session: Session, example_list: ShoppingList, example_products: List[Product]):
     """Check whether list deletion doesn't remove products"""
     example_list.products = example_products
 
@@ -268,11 +264,11 @@ def test_product_delete(
     assert len(example_list.products) == 2
 
 
-def test_product_category_relation(db_session: Session, example_category: Category, example_products: List[Product]):
+def test_product_category_relation(db_session: Session, example_categories: List[Category], example_products: List[Product]):
     """Check whether orm adds products along with category"""
-    example_category.products = example_products
+    example_categories[0].products = example_products
 
-    db_session.add(example_category)
+    db_session.add(example_categories[0])
     db_session.commit()
 
     categories: List[Category] = db_session.query(Category).all()
@@ -282,37 +278,46 @@ def test_product_category_relation(db_session: Session, example_category: Catego
 
 def test_product_category_relation_delete_product(
       db_session: Session,
-      example_category: Category,
+      example_categories: List[Category],
       example_products: List[Product]
 ):
-    """Check whether category remain after removing product"""
-    example_category.products = example_products
+    """Check whether category remains after removing the product"""
+    category = example_categories[0]
+    product = example_products[0]
 
-    db_session.add(example_category)
+    category.products = [product]
+
+    db_session.add(category)
     db_session.commit()
 
-    db_session.delete(example_products[0])
+    db_session.delete(product)
     db_session.commit()
 
     categories = db_session.query(Category).all()
 
     assert len(categories) == 1
+    assert not categories[0].products
 
 
 def test_product_category_relation_delete_category(
       db_session: Session,
-      example_category: Category,
+      example_categories: Category,
       example_products: List[Product]
 ):
-    """Check whether products remain after removing category"""
-    example_category.products = example_products
+    """Check whether products remain after removing the category"""
+    category = example_categories[0]
 
-    db_session.add(example_category)
+    category.products = example_products
+
+    db_session.add(category)
     db_session.commit()
 
-    db_session.delete(example_category)
+    db_session.delete(category)
     db_session.commit()
 
     products = db_session.query(Product).all()
 
     assert len(products) == 3
+
+    for p in products:
+        assert not p.category
