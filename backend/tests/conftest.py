@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from app import settings
 from app.main import app
 from app.db.session import Base
-from app.db.models import Category, Product, User
+from app.db.models import Category, Product, User, List as ShoppingList
 from app.auth import pwd_context
 
 
@@ -39,16 +39,24 @@ def client():
 
 
 @pytest.fixture
-def token(db_session: Session, client):
-    user = User(
+def example_user():
+    return User(
         email='test@user.cc',
         username='test',
         hashed_password=pwd_context.hash('passwd')
     )
 
-    db_session.add(user)
+
+@pytest.fixture
+def user(db_session, example_user):
+    db_session.add(example_user)
     db_session.commit()
 
+    return example_user
+
+
+@pytest.fixture
+def token(db_session: Session, client, user):
     login_response = client.post('/login', data={'username': user.email, 'password': 'passwd'})
     body = login_response.json()
 
@@ -80,13 +88,51 @@ def category_sweets(db_session, example_categories):
 
 
 @pytest.fixture
-def example_product(category_meat):
-    return Product(name='Chicken', category=category_meat)
+def example_products(category_meat, category_sweets):
+    return [
+        Product(name='Chicken', category=category_meat),
+        Product(name='Pork', category=category_meat),
+        Product(name='Chocolate', category=category_sweets),
+    ]
 
 
 @pytest.fixture
-def product(db_session, example_product):
-    db_session.add(example_product)
+def example_products_without_category():
+    return [
+        Product(name='bread'),
+        Product(name='milk'),
+        Product(name='eggs'),
+    ]
+
+
+@pytest.fixture
+def products(db_session: Session, example_products):
+    db_session.add_all(example_products)
     db_session.commit()
 
-    return example_product
+    return example_products
+
+
+@pytest.fixture
+def product(db_session, example_products):
+    db_session.add(example_products[0])
+    db_session.commit()
+
+    return example_products[0]
+
+
+@pytest.fixture
+def example_shopping_lists(products, user):
+    return [
+        ShoppingList(name='list_one', user_id=user.id, products=products),
+        ShoppingList(name='list_one', user_id=user.id),
+    ]
+
+
+@pytest.fixture
+def shopping_list(db_session, example_shopping_lists):
+    shopping_list = example_shopping_lists[0]
+    db_session.add(shopping_list)
+    db_session.commit()
+
+    return shopping_list

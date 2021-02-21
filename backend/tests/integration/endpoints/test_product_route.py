@@ -1,9 +1,6 @@
 import pytest
 
 
-api_prefix = 'localhost:3000/products'
-
-
 def test_get_products_returns_all(client, product, token):
     res = client.get('/products', headers={'Authorization': f'Bearer {token}'})
 
@@ -96,7 +93,7 @@ def test_add_product_returns_unprocessable_entity(client, token):
     {'X-Custom': 'Bearer invalid'},
     {}
 ])
-def test_get_product_unavailable_for_unauthorised(client, headers):
+def test_add_product_unavailable_for_unauthorised(client, headers):
     res = client.post('/products', json={}, headers=headers, allow_redirects=True)
 
     assert res.status_code == 401

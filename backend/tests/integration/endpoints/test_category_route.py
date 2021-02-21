@@ -1,7 +1,5 @@
 import pytest
 
-api_prefix = 'localhost:3000/categories'
-
 
 def test_get_categories_returns_all(client, category_meat, token):
     res = client.get('/categories', headers={'Authorization': f'Bearer {token}'})
