@@ -1,17 +1,12 @@
 import pytest
 
 
-def test_get_products_returns_all(client, product, token):
+@pytest.mark.usefixtures('products')
+def test_get_products_returns_all(client, token):
     res = client.get('/products', headers={'Authorization': f'Bearer {token}'})
 
-    assert len(res.json()) == 1
-
-    response_product = res.json()[0]
-
+    assert len(res.json()) == 3
     assert res.status_code == 200
-    assert response_product['id'] == product.id
-    assert response_product['name'] == product.name
-    assert response_product['category_id'] == product.category_id
 
 
 @pytest.mark.parametrize('headers', [

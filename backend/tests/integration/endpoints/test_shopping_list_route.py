@@ -1,17 +1,12 @@
 import pytest
 
 
-def test_get_lists_returns_all(client, shopping_list, token):
+@pytest.mark.usefixtures('shopping_lists')
+def test_get_lists_returns_all(client, token):
     res = client.get('/lists', headers={'Authorization': f'Bearer {token}'})
 
-    assert len(res.json()) == 1
-
-    response_shopping_list = res.json()[0]
-
     assert res.status_code == 200
-    assert response_shopping_list['id'] == shopping_list.id
-    assert response_shopping_list['name'] == shopping_list.name
-    assert response_shopping_list['category_id'] == shopping_list.category_id
+    assert len(res.json()) == 2
 
 
 @pytest.mark.parametrize('headers', [
@@ -26,7 +21,8 @@ def test_get_lists_unavailable_for_unauthorised(client, headers):
     assert res.status_code == 401
 
 
-def test_get_list_returns_one(client, shopping_list, token):
+def test_get_list_returns_one(client, shopping_lists, token):
+    shopping_list = shopping_lists[0]
     res = client.get(f'/lists/{shopping_list.id}', headers={'Authorization': f'Bearer {token}'})
 
     response_shopping_list = res.json()
@@ -54,10 +50,10 @@ def test_get_list_unavailable_for_unauthorised(client, headers):
     assert res.status_code == 401
 
 
-def test_add_list(client, category_meat, token):
+def test_add_list(client, products, token):
     shopping_list_data = {
-        'name': 'chicken',
-        'category_id': category_meat.id
+        'name': 'list_one',
+        'product_ids': [p.id for p in products]
     }
 
     res = client.post(
@@ -73,7 +69,26 @@ def test_add_list(client, category_meat, token):
 
     assert returned_shopping_list['id'] == 1
     assert returned_shopping_list['name'] == shopping_list_data['name']
-    assert returned_shopping_list['category_id'] == shopping_list_data['category_id']
+    assert returned_shopping_list['user_id']
+    assert len(returned_shopping_list['products']) == 3
+
+
+def test_add_list_returns_bad_request(client, token):
+    """Check whether a BAD REQUEST response is returned when product with provided id does not exist."""
+    shopping_list_data = {
+        'name': 'list_one',
+        'product_ids': [1]
+    }
+
+    res = client.post(
+        '/lists',
+        json=shopping_list_data,
+        headers={'Authorization': f'Bearer {token}'},
+        allow_redirects=True
+    )
+
+    assert res.status_code == 400
+    assert res.json()['detail'] == 'Provided products does not exist in the system'
 
 
 def test_add_list_returns_unprocessable_entity(client, token):
@@ -104,6 +119,11 @@ def test_remove_list(client, shopping_list, token):
 
     assert res.status_code == 200
     assert res.json() is None
+
+    res = client.get(f'/lists', headers={'Authorization': f'Bearer {token}'})
+
+    assert res.status_code == 200
+    assert not res.json()
 
 
 def test_remove_list_returns_not_found(client, token):

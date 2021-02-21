@@ -144,25 +144,26 @@ def test_list_delete(db_session: Session, example_user: User, example_shopping_l
 
 def test_list_products_relation(
         db_session: Session,
-        example_shopping_lists: List[ShoppingList],
-        example_products_without_category: List[Product]
+        empty_shopping_list: ShoppingList,
+        example_products: List[Product]
 ):
     """Check whether products are being added to the list"""
-    example_list = example_shopping_lists[1]
-    example_list.products = example_products_without_category
+    empty_shopping_list.products = example_products
 
-    db_session.add(example_list)
+    db_session.add(empty_shopping_list)
     db_session.commit()
 
     lists = db_session.query(ShoppingList).all()
     products = db_session.query(Product).all()
 
+    for l in lists:
+        assert l.name == 'empty'
     assert len(lists) == 1
     assert len(products) == 3
 
     shopping_list = lists[0]
 
-    assert shopping_list.products == example_products_without_category
+    assert shopping_list.products == example_products
 
 
 def test_list_delete_keeps_products(db_session: Session, shopping_list: ShoppingList):
@@ -177,23 +178,9 @@ def test_list_delete_keeps_products(db_session: Session, shopping_list: Shopping
     assert len(products) == 3
 
 
-def test_user_delete_keeps_products(
-      db_session: Session,
-      example_user: User,
-      example_shopping_lists: List[ShoppingList],
-      example_products_without_category: List[Product]
-):
+def test_user_delete_keeps_products(db_session: Session, shopping_list: ShoppingList):
     """Check whether user deletion doesn't remove products from his list"""
-    example_list = example_shopping_lists[0]
-    example_list.user = example_user
-    example_list.products = example_products_without_category
-
-    db_session.add(example_list)
-    db_session.commit()
-
-    # Clear products from list before delete
-    example_user.lists[0].products = []
-    db_session.delete(example_user)
+    db_session.delete(shopping_list.user)
     db_session.commit()
 
     user = db_session.query(User).all()

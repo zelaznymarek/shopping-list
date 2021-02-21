@@ -2,6 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm.session import Session
+from sqlalchemy.orm.exc import NoResultFound
 
 from app.auth import get_current_user
 from app.db.session import get_db
@@ -18,7 +19,9 @@ def get_one(
         current_user: models.User = Depends(get_current_user),
         db_session: Session = Depends(get_db)
 ):
-    if not (db_list := crud.get_by_id(db_session, list_id)):
+    try:
+        db_list = crud.get_by_id(db_session, list_id)
+    except NoResultFound:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f'The list with id "{list_id}" not found.'
@@ -41,13 +44,21 @@ def add(
         current_user: models.User = Depends(get_current_user),
         db_session: Session = Depends(get_db)
 ) -> schemas.ShoppingList:
-    if crud.get_by_name(db_session, new_list.name):
+    try:
+        crud.get_by_name(db_session, new_list.name)
+
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST,
             detail='The list with this name already exists in the system.'
         )
-
-    return crud.create(db_session, new_list.dict())
+    except NoResultFound:
+        try:
+            return crud.create(db_session, new_list.dict(), current_user)
+        except ValueError as exc:
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST,
+                detail=str(exc)
+            )
 
 
 @router.delete('/{list_id}')
@@ -56,7 +67,9 @@ def remove(
         current_user: models.User = Depends(get_current_user),
         db_session: Session = Depends(get_db)
 ):
-    if not (db_list := crud.get_by_id(db_session, list_id)):
+    try:
+        db_list = crud.get_by_id(db_session, list_id)
+    except NoResultFound:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f'The list with id "{list_id}" not found.'

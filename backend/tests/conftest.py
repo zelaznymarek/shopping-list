@@ -122,6 +122,11 @@ def product(db_session, example_products):
 
 
 @pytest.fixture
+def empty_shopping_list(products, user):
+    return ShoppingList(name='empty', user_id=user.id)
+
+
+@pytest.fixture
 def example_shopping_lists(products, user):
     return [
         ShoppingList(name='list_one', user_id=user.id, products=products),
@@ -136,3 +141,11 @@ def shopping_list(db_session, example_shopping_lists):
     db_session.commit()
 
     return shopping_list
+
+
+@pytest.fixture
+def shopping_lists(db_session, example_shopping_lists):
+    db_session.add_all(example_shopping_lists)
+    db_session.commit()
+
+    return example_shopping_lists
