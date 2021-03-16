@@ -97,6 +97,11 @@ def example_products(category_meat, category_sweets):
 
 
 @pytest.fixture
+def example_product(category_meat):
+    return Product(name='Chicken', category=category_meat)
+
+
+@pytest.fixture
 def example_products_without_category():
     return [
         Product(name='bread'),
@@ -114,11 +119,11 @@ def products(db_session: Session, example_products):
 
 
 @pytest.fixture
-def product(db_session, example_products):
-    db_session.add(example_products[0])
+def product(db_session, example_product):
+    db_session.add(example_product)
     db_session.commit()
 
-    return example_products[0]
+    return example_product
 
 
 @pytest.fixture
@@ -135,12 +140,16 @@ def example_shopping_lists(products, user):
 
 
 @pytest.fixture
-def shopping_list(db_session, example_shopping_lists):
-    shopping_list = example_shopping_lists[0]
-    db_session.add(shopping_list)
+def example_shopping_list(products, user):
+    return ShoppingList(name='list_one', user_id=user.id, products=products)
+
+
+@pytest.fixture
+def shopping_list(db_session, example_shopping_list):
+    db_session.add(example_shopping_list)
     db_session.commit()
 
-    return shopping_list
+    return example_shopping_list
 
 
 @pytest.fixture

@@ -92,6 +92,7 @@ def test_add_list_returns_bad_request(client, token):
 
 
 def test_add_list_returns_unprocessable_entity(client, token):
+    """Check whether an UNPROCESSABLE ENTITY response is returned when POST body is invalid"""
     res = client.post(
         '/lists',
         json={},

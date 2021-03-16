@@ -1,9 +1,7 @@
-import pytest
-
 from sqlalchemy.orm import Session
 
 from app.crud.category import create, remove, update
-from app.db.models import Category
+from app.db.models import Category, Product
 
 
 def test_create(db_session: Session):
@@ -22,6 +20,12 @@ def test_remove_by_id(db_session: Session, category_meat: Category):
     remove(db_session, category_meat)
 
     assert len(db_session.query(Category).all()) == 0
+
+
+def test_remove_should_not_delete_products(db_session: Session, product: Product):
+    remove(db_session, product.category)
+
+    assert len(db_session.query(Product).all()) == 1
 
 
 def test_update(db_session: Session, category_meat: Category):
