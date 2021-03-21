@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.crud.user import create, remove, get_all, update
+from app.repository.user import create, remove, get_all, update
 from app.schemas import UserCreate
 from app.db.models import User
 

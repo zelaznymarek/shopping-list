@@ -9,8 +9,8 @@ from app.db.session import Base
 product_list = Table(
     'product_list',
     Base.metadata,
-    Column('list_id', Integer, ForeignKey('list.id')),
-    Column('product_id', Integer, ForeignKey('product.id'))
+    Column('list_id', Integer, ForeignKey('list.id', ondelete='CASCADE')),
+    Column('product_id', Integer, ForeignKey('product.id', ondelete='CASCADE'))
 )
 
 
@@ -34,7 +34,11 @@ class List(Base):
     completed = Column(Boolean, default=False)
     user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
     user = relationship('User', back_populates='lists')
-    products = relationship('Product', secondary=product_list)
+    products = relationship(
+        'Product',
+        secondary=product_list,
+        back_populates='lists'
+    )
 
 
 class Product(Base):
@@ -44,6 +48,11 @@ class Product(Base):
     name = Column(String, index=True, unique=True, nullable=False)
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship('Category', back_populates='products')
+    lists = relationship(
+        'List',
+        secondary=product_list,
+        back_populates='products'
+    )
 
 
 class Category(Base):

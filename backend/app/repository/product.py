@@ -6,11 +6,11 @@ from app.db import models
 
 
 def get_by_id(db_session: Session, product_id: int) -> Optional[models.Product]:
-    return db_session.query(models.Product).filter(models.Product.id == product_id).first()
+    return db_session.query(models.Product).filter(models.Product.id == product_id).one()
 
 
 def get_by_name(db_session: Session, product_name) -> Optional[models.Product]:
-    return db_session.query(models.Product).filter(models.Product.name == product_name).first()
+    return db_session.query(models.Product).filter(models.Product.name == product_name).one()
 
 
 def get_many(db_session: Session) -> List[models.Product]:

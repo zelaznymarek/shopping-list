@@ -1,4 +1,5 @@
 from typing import List
+from datetime import datetime
 
 from pydantic import BaseModel
 
@@ -7,17 +8,17 @@ from app.schemas.product import Product
 
 class ShoppingListBase(BaseModel):
     name: str
-    user_id: int
-    products: List[Product] = []
 
 
 class ShoppingListCreate(ShoppingListBase):
-    pass
+    product_ids: List[int]
 
 
 class ShoppingList(ShoppingListBase):
     id: int
-    created_at: str
+    created_at: datetime
+    products: List[Product]
+    user_id: int
 
     class Config:
         orm_mode = True
