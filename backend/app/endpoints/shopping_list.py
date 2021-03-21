@@ -8,7 +8,7 @@ from app.auth import get_current_user
 from app.db.session import get_db
 from app.db import models
 from app.schemas import shopping_list as schemas
-from app.crud import shopping_list as crud
+from app.repository import shopping_list as crud
 
 router = APIRouter(redirect_slashes=False)
 

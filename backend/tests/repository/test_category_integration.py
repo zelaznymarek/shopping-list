@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.crud.category import create, remove, update
+from app.repository.category import create, remove, update
 from app.db.models import Category, Product
 
 

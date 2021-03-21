@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy.orm import Session
 
 from app.db.models import List as ShoppingList, Product, Category
-from app.crud.shopping_list import create, remove
+from app.repository.shopping_list import create, remove
 
 
 def test_create_returns_created_list(db_session: Session, products: List[Product], user):

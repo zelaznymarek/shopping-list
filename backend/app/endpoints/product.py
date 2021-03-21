@@ -8,7 +8,7 @@ from app.auth import get_current_user
 from app.db.session import get_db
 from app.db import models
 from app.schemas import product as schemas
-from app.crud import product as crud
+from app.repository import product as crud
 
 router = APIRouter()
 

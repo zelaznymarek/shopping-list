@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.db.models import Product, Category
-from app.crud.product import remove, create
+from app.repository.product import remove, create
 
 
 def test_remove_should_not_delete_category(db_session: Session, product: Product):
