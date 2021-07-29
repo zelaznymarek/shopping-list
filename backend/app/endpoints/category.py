@@ -44,7 +44,7 @@ def add(
     if crud.get_by_name(db_session, new_category.name):
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST,
-            detail='The category with this name already exists in the system.'
+            detail=f'The category "{new_category.name}" already exists in the system.'
         )
 
     return crud.create(db_session, new_category.dict())
