@@ -84,13 +84,38 @@ def test_add_category_returns_unprocessable_entity(client, token):
     assert res.status_code == 422
 
 
+def test_add_category_returns_bad_request_if_category_exists(client, token):
+    category_data = {
+        'name': 'sweets'
+    }
+
+    client.post(
+        '/categories',
+        json=category_data,
+        headers={'Authorization': f'Bearer {token}'},
+        allow_redirects=True
+    )
+
+    res = client.post(
+        '/categories',
+        json=category_data,
+        headers={'Authorization': f'Bearer {token}'},
+        allow_redirects=True
+    )
+
+    assert res.status_code == 400
+
+    error_detail = res.json().get('detail')
+    assert error_detail == f'The category "{category_data.get("name")}" already exists in the system.'
+
+
 @pytest.mark.parametrize('headers', [
     {'Authorization': 'Bearer invalid'},
     {'Authorization': 'invalid'},
     {'X-Custom': 'Bearer invalid'},
     {}
 ])
-def test_get_category_unavailable_for_unauthorised(client, headers):
+def test_add_category_unavailable_for_unauthorised(client, headers):
     res = client.post('/categories', json={}, headers=headers, allow_redirects=True)
 
     assert res.status_code == 401

@@ -1,8 +1,8 @@
-"""init
+"""empty message
 
-Revision ID: 70fddd1ab024
-Revises:
-Create Date: 2020-07-29 15:08:19.217218
+Revision ID: a2190e58db81
+Revises: 
+Create Date: 2021-03-21 17:39:28.634188
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '70fddd1ab024'
+revision = 'a2190e58db81'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -21,6 +21,7 @@ def upgrade():
     op.create_table('category',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
+    sa.Column('order', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_category_id'), 'category', ['id'], unique=False)
@@ -57,8 +58,8 @@ def upgrade():
     op.create_table('product_list',
     sa.Column('list_id', sa.Integer(), nullable=True),
     sa.Column('product_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['list_id'], ['list.id'], ),
-    sa.ForeignKeyConstraint(['product_id'], ['product.id'], )
+    sa.ForeignKeyConstraint(['list_id'], ['list.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['product_id'], ['product.id'], ondelete='CASCADE')
     )
     # ### end Alembic commands ###
 

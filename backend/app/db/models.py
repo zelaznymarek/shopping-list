@@ -60,4 +60,5 @@ class Category(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True, unique=True, nullable=False)
+    order = Column(Integer)
     products = relationship('Product', back_populates='category')

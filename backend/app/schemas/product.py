@@ -1,11 +1,17 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 
 class ProductBase(BaseModel):
     name: str
     category_id: int
+
+    @validator('name')
+    def name_length(cls, value):
+        if any([len(value) < 1, len(value) > 255]):
+            raise ValueError('Name must be 1 to 255 chars long')
+        return value
 
 
 class ProductCreate(ProductBase):
