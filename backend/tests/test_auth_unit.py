@@ -12,7 +12,6 @@ from app.auth import (
     create_access_token,
     authenticate_user,
     pwd_context,
-    is_decoded_token_valid,
     ALGORITHM
 )
 from app.db.models import User
@@ -95,7 +94,7 @@ def test_authenticate_user_wrong_password(example_user):
     with patch('app.auth.get_user', return_value=example_user):
         user = authenticate_user(Mock(), email=example_user.email, password='wrong')
 
-    assert user is False
+    assert user is None
 
 
 def test_authenticate_user_wrong_user(example_user):
@@ -104,25 +103,7 @@ def test_authenticate_user_wrong_user(example_user):
     with patch('app.auth.get_user', return_value=None):
         user = authenticate_user(Mock(), email=example_user.email, password='bababa')
 
-    assert user is False
-
-
-@pytest.mark.parametrize('decoded_token', [
-    {'sub': 'username', 'exp': 125},
-    {'sub': 'username'},
-    {'exp': (datetime.utcnow() + timedelta(days=10)).timestamp()}
-])
-def test_is_decoded_token_valid_returns_false(decoded_token):
-    assert is_decoded_token_valid(decoded_token) is False
-
-
-def test_is_decoded_token_valid_returns_true():
-    decoded_token = {
-        'sub': 'username',
-        'exp': (datetime.utcnow() + timedelta(days=10)).timestamp()
-    }
-
-    assert is_decoded_token_valid(decoded_token) is True
+    assert user is None
 
 
 def test_get_current_user(example_user):
@@ -142,6 +123,20 @@ def test_get_current_user(example_user):
     get_user_mock.assert_called_once_with(db_mock, example_user.username)
 
     assert user == example_user
+
+
+def test_get_current_with_user_expired_token():
+    secret_key = 'notsosecret'
+    data = {
+        'sub': 'tester',
+        'exp': datetime.utcnow() - timedelta(days=1)
+    }
+
+    with patch('app.auth.SECRET_KEY', secret_key):
+        token = jwt.encode(data, secret_key, algorithm=ALGORITHM)
+
+        with pytest.raises(HTTPException):
+            get_current_user(Mock(), token)
 
 
 def test_get_current_user_invalid_token(example_user):

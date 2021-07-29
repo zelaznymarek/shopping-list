@@ -34,9 +34,9 @@ def authenticate_user(db_session: Session, *, email: str, password: str):
     user = get_user(db_session, email)
 
     if not user:
-        return False
+        return None
     if not verify_password(password, user.hashed_password):
-        return False
+        return None
     return user
 
 
@@ -52,22 +52,6 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
-def is_decoded_token_valid(decoded_token: dict) -> bool:
-    username = decoded_token.get('sub')
-    expiration = decoded_token.get('exp')
-
-    if expiration is None:
-        return False
-
-    if expiration < datetime.utcnow().timestamp():
-        return False
-
-    if username is None:
-        return False
-
-    return True
-
-
 def get_current_user(db_session: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -77,11 +61,12 @@ def get_current_user(db_session: Session = Depends(get_db), token: str = Depends
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get('sub')
 
-        if not is_decoded_token_valid(payload):
+        if not username:
             raise credentials_exception
 
-        token_data = TokenData(username=payload.get('sub'))
+        token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
 
