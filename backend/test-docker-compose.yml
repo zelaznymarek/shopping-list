@@ -14,11 +14,7 @@ services:
     build:
       context: .
       dockerfile: test.dockerfile
-    command: bash -c "alembic upgrade head && pytest -vvvvs"
-    volumes:
-      - type: bind
-        source: ./backend
-        target: /src
+    command: bash -c "poetry run alembic upgrade head && poetry run pytest -vvvvs"
     environment:
       PYTHONPATH: .
       DATABASE_URL: 'postgresql://postgres:postgres@test_postgres:5432/shopping'

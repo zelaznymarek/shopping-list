@@ -1,7 +1,8 @@
 from typing import List, Optional
 
-from app.db import models
 from sqlalchemy.orm.session import Session
+
+from app.db import models
 
 
 def get_by_id(db_session: Session, category_id: int) -> Optional[models.Category]:

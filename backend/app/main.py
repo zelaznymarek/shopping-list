@@ -1,6 +1,7 @@
 import uvicorn
-from app.endpoints.api_router import api_router
 from fastapi import FastAPI
+
+from app.endpoints.api_router import api_router
 
 app = FastAPI()
 

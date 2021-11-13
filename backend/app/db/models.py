@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from app.db.session import Base
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
+
+from app.db.session import Base
 
 product_list = Table(
     "product_list",

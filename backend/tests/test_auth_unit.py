@@ -2,6 +2,10 @@ from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
 
 import pytest
+from fastapi import HTTPException
+from freezegun import freeze_time
+from jose import jwt
+
 from app.auth import (
     ALGORITHM,
     authenticate_user,
@@ -12,9 +16,6 @@ from app.auth import (
     pwd_context,
 )
 from app.db.models import User
-from fastapi import HTTPException
-from freezegun import freeze_time
-from jose import jwt
 
 
 @pytest.fixture

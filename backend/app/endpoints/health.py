@@ -1,8 +1,9 @@
-from app.db.session import get_db
-from app.health_checks import is_db_healthy
 from fastapi import APIRouter, Depends, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+
+from app.db.session import get_db
+from app.health_checks import is_db_healthy
 
 router = APIRouter()
 

@@ -1,12 +1,13 @@
 from typing import List
 
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm.session import Session
+
 from app.auth import get_current_user
 from app.db import models
 from app.db.session import get_db
 from app.repository import category as crud
 from app.schemas import category as schemas
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm.session import Session
 
 router = APIRouter(redirect_slashes=False)
 

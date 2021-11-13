@@ -1,11 +1,12 @@
 from typing import List
 
 import pytest
+from sqlalchemy.orm import Session
+
 from app.db.models import Category
 from app.db.models import List as ShoppingList
 from app.db.models import Product
 from app.repository.shopping_list import create, remove
-from sqlalchemy.orm import Session
 
 
 def test_create_returns_created_list(

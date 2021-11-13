@@ -1,14 +1,15 @@
 from datetime import datetime, timedelta
 from typing import Optional
 
-from app.db.models import User
-from app.db.session import get_db
-from app.schemas import TokenData
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
+
+from .db.models import User
+from .db.session import get_db
+from .schemas import TokenData
 
 SECRET_KEY = "1be3773b21c25858e2a5a1cbcd058dc267cc81c1ee1e499984c77b74db01bf62"
 ALGORITHM = "HS256"

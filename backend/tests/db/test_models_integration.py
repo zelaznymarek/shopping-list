@@ -2,10 +2,11 @@ from datetime import datetime
 from typing import List
 
 import pytest
+from sqlalchemy.orm import Session
+
 from app.db.models import Category
 from app.db.models import List as ShoppingList
 from app.db.models import Product, User
-from sqlalchemy.orm import Session
 
 # Test models
 

@@ -1,4 +1,8 @@
 import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, close_all_sessions, sessionmaker
+
 from app import settings
 from app.auth import pwd_context
 from app.db.models import Category
@@ -6,9 +10,6 @@ from app.db.models import List as ShoppingList
 from app.db.models import Product, User
 from app.db.session import Base
 from app.main import app
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, close_all_sessions, sessionmaker
 
 
 @pytest.fixture

@@ -1,6 +1,7 @@
+from sqlalchemy.orm import Session
+
 from app.db.models import Category, Product
 from app.repository.category import create, remove, update
-from sqlalchemy.orm import Session
 
 
 def test_create(db_session: Session):

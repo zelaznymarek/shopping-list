@@ -1,7 +1,8 @@
+from sqlalchemy.orm import Session
+
 from app.db.models import User
 from app.repository.user import create, get_all, remove, update
 from app.schemas import UserCreate
-from sqlalchemy.orm import Session
 
 
 def test_create_defaults(db_session):

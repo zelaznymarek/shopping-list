@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 services:
   postgres:
     image: postgres:12
@@ -21,7 +21,7 @@ services:
     ports:
       - '8888:8888'
     volumes:
-      - ./backend:/src/:cached
+      - ./:/app/:cached
     environment:
       PYTHONPATH: .
       DATABASE_URL: 'postgresql://postgres:postgres@postgres:5432/shopping'

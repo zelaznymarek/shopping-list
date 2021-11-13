@@ -1,6 +1,7 @@
-from app.settings import get_logger
 from sqlalchemy.exc import DatabaseError
 from sqlalchemy.orm import Session
+
+from .settings import get_logger
 
 logger = get_logger(__name__)
 
