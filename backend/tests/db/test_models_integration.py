@@ -2,9 +2,10 @@ from datetime import datetime
 from typing import List
 
 import pytest
+from app.db.models import Category
+from app.db.models import List as ShoppingList
+from app.db.models import Product, User
 from sqlalchemy.orm import Session
-
-from app.db.models import User, List as ShoppingList, Product, Category
 
 # Test models
 
@@ -40,7 +41,7 @@ def test_list(db_session: Session):
     shopping_list: ShoppingList = results[0]
 
     assert shopping_list.name == datetime.utcnow().date().isoformat()
-    assert type(shopping_list.created_at).__name__ == 'datetime'
+    assert type(shopping_list.created_at).__name__ == "datetime"
     assert shopping_list.completed is False
     assert shopping_list.user_id is None
     assert shopping_list.products == []
@@ -103,7 +104,9 @@ def test_user_list_cascade_delete(db_session: Session, shopping_list: ShoppingLi
     assert len(lists) == 0
 
 
-def test_list_user_cascade_delete(db_session: Session, example_shopping_lists: List[ShoppingList]):
+def test_list_user_cascade_delete(
+    db_session: Session, example_shopping_lists: List[ShoppingList]
+):
     """Check whether deleting list doesn't delete its owner"""
     example_list = example_shopping_lists[0]
 
@@ -126,7 +129,9 @@ def test_list_user_cascade_delete(db_session: Session, example_shopping_lists: L
     assert len(lists) == 0
 
 
-def test_list_delete(db_session: Session, example_user: User, example_shopping_lists: List[ShoppingList]):
+def test_list_delete(
+    db_session: Session, example_user: User, example_shopping_lists: List[ShoppingList]
+):
     """Check whether deleted list disappears from user lists."""
     example_list = example_shopping_lists[0]
     example_list.user = example_user
@@ -143,9 +148,9 @@ def test_list_delete(db_session: Session, example_user: User, example_shopping_l
 
 
 def test_list_products_relation(
-        db_session: Session,
-        empty_shopping_list: ShoppingList,
-        example_products: List[Product]
+    db_session: Session,
+    empty_shopping_list: ShoppingList,
+    example_products: List[Product],
 ):
     """Check whether products are being added to the list"""
     empty_shopping_list.products = example_products
@@ -157,7 +162,7 @@ def test_list_products_relation(
     products = db_session.query(Product).all()
 
     for l in lists:
-        assert l.name == 'empty'
+        assert l.name == "empty"
     assert len(lists) == 1
     assert len(products) == 3
 
@@ -193,9 +198,9 @@ def test_user_delete_keeps_products(db_session: Session, shopping_list: Shopping
 
 
 def test_product_delete(
-      db_session: Session,
-      example_shopping_lists: List[ShoppingList],
-      example_products_without_category: List[Product]
+    db_session: Session,
+    example_shopping_lists: List[ShoppingList],
+    example_products_without_category: List[Product],
 ):
     """Check whether products are removed from list when deleted"""
     example_list = example_shopping_lists[0]
@@ -213,9 +218,9 @@ def test_product_delete(
 
 
 def test_product_category_relation(
-        db_session: Session,
-        example_categories: List[Category],
-        example_products_without_category: List[Product]
+    db_session: Session,
+    example_categories: List[Category],
+    example_products_without_category: List[Product],
 ):
     """Check whether orm adds products along with category"""
     example_categories[0].products = example_products_without_category
@@ -229,9 +234,9 @@ def test_product_category_relation(
 
 
 def test_product_category_relation_delete_product(
-      db_session: Session,
-      example_categories: List[Category],
-      example_products_without_category: List[Product]
+    db_session: Session,
+    example_categories: List[Category],
+    example_products_without_category: List[Product],
 ):
     """Check whether category remains after removing the product"""
     category = example_categories[0]
@@ -252,9 +257,9 @@ def test_product_category_relation_delete_product(
 
 
 def test_product_category_relation_delete_category(
-      db_session: Session,
-      example_categories: Category,
-      example_products_without_category: List[Product]
+    db_session: Session,
+    example_categories: Category,
+    example_products_without_category: List[Product],
 ):
     """Check whether products remain after removing the category"""
     category = example_categories[0]

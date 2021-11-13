@@ -1,9 +1,8 @@
-from typing import List
 from datetime import datetime
-
-from pydantic import BaseModel
+from typing import List
 
 from app.schemas.product import Product
+from pydantic import BaseModel
 
 
 class ShoppingListBase(BaseModel):

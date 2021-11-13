@@ -1,13 +1,14 @@
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, close_all_sessions, Session
-from fastapi.testclient import TestClient
-
 from app import settings
-from app.main import app
-from app.db.session import Base
-from app.db.models import Category, Product, User, List as ShoppingList
 from app.auth import pwd_context
+from app.db.models import Category
+from app.db.models import List as ShoppingList
+from app.db.models import Product, User
+from app.db.session import Base
+from app.main import app
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, close_all_sessions, sessionmaker
 
 
 @pytest.fixture
@@ -25,7 +26,7 @@ def db_session():
 
 @pytest.fixture
 def invalid_db_session():
-    engine = create_engine('postgresql://postgres:postgres@invalid_host:5432/db')
+    engine = create_engine("postgresql://postgres:postgres@invalid_host:5432/db")
     session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
     yield session()
@@ -41,9 +42,9 @@ def client():
 @pytest.fixture
 def example_user():
     return User(
-        email='test@user.cc',
-        username='test',
-        hashed_password=pwd_context.hash('passwd')
+        email="test@user.cc",
+        username="test",
+        hashed_password=pwd_context.hash("passwd"),
     )
 
 
@@ -57,17 +58,19 @@ def user(db_session, example_user):
 
 @pytest.fixture
 def token(db_session: Session, client, user):
-    login_response = client.post('/login', data={'username': user.email, 'password': 'passwd'})
+    login_response = client.post(
+        "/login", data={"username": user.email, "password": "passwd"}
+    )
     body = login_response.json()
 
-    return body['access_token']
+    return body["access_token"]
 
 
 @pytest.fixture
 def example_categories():
     return [
-        Category(name='meat'),
-        Category(name='sweets'),
+        Category(name="meat"),
+        Category(name="sweets"),
     ]
 
 
@@ -90,23 +93,23 @@ def category_sweets(db_session, example_categories):
 @pytest.fixture
 def example_products(category_meat, category_sweets):
     return [
-        Product(name='Chicken', category=category_meat),
-        Product(name='Pork', category=category_meat),
-        Product(name='Chocolate', category=category_sweets),
+        Product(name="Chicken", category=category_meat),
+        Product(name="Pork", category=category_meat),
+        Product(name="Chocolate", category=category_sweets),
     ]
 
 
 @pytest.fixture
 def example_product(category_meat):
-    return Product(name='Chicken', category=category_meat)
+    return Product(name="Chicken", category=category_meat)
 
 
 @pytest.fixture
 def example_products_without_category():
     return [
-        Product(name='bread'),
-        Product(name='milk'),
-        Product(name='eggs'),
+        Product(name="bread"),
+        Product(name="milk"),
+        Product(name="eggs"),
     ]
 
 
@@ -128,20 +131,20 @@ def product(db_session, example_product):
 
 @pytest.fixture
 def empty_shopping_list(products, user):
-    return ShoppingList(name='empty', user_id=user.id)
+    return ShoppingList(name="empty", user_id=user.id)
 
 
 @pytest.fixture
 def example_shopping_lists(products, user):
     return [
-        ShoppingList(name='list_one', user_id=user.id, products=products),
-        ShoppingList(name='list_one', user_id=user.id),
+        ShoppingList(name="list_one", user_id=user.id, products=products),
+        ShoppingList(name="list_one", user_id=user.id),
     ]
 
 
 @pytest.fixture
 def example_shopping_list(products, user):
-    return ShoppingList(name='list_one', user_id=user.id, products=products)
+    return ShoppingList(name="list_one", user_id=user.id, products=products)
 
 
 @pytest.fixture

@@ -7,22 +7,30 @@
 1. Install required asdf-vm plugins
 ```shell
 asdf plugin add python
-asdf plugin update python
 asdf plugin add poetry
-asdf plugin update poetry
 ```
 2. Install Python
 ```shell
-asdf install python 3.9.6
-asdf local python 3.9.6
+asdf plugin update python
+asdf install python 3.10.0
+asdf local python 3.10.0
 ```
 3. Install Poetry
 ```shell
+asdf plugin update poetry
 asdf install poetry 1.2.0a1
 asdf local poetry 1.2.0a1
 ```
 
 4. Set up virtualenv using Poetry
-5. ```shell
-poetry env use python
+```shell
+poetry env use python3
+```
+
+##Development
+
+Check code format before committing
+```shell
+poetry run isort backend/app backend/tests
+poetry run black backend/app backend/tests
 ```

@@ -1,21 +1,20 @@
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from passlib.context import CryptContext
-from sqlalchemy.orm import Session
-from jose import jwt, JWTError
-
-from app.schemas import TokenData
 from app.db.models import User
 from app.db.session import get_db
+from app.schemas import TokenData
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+from passlib.context import CryptContext
+from sqlalchemy.orm import Session
 
-SECRET_KEY = '1be3773b21c25858e2a5a1cbcd058dc267cc81c1ee1e499984c77b74db01bf62'
-ALGORITHM = 'HS256'
+SECRET_KEY = "1be3773b21c25858e2a5a1cbcd058dc267cc81c1ee1e499984c77b74db01bf62"
+ALGORITHM = "HS256"
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
-pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def get_password_hash(password: str):
@@ -46,15 +45,15 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
 
-    data.update({'exp': expire})
+    data.update({"exp": expire})
     encoded_jwt = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
 
     return encoded_jwt
 
 
 def is_decoded_token_valid(decoded_token: dict) -> bool:
-    username = decoded_token.get('sub')
-    expiration = decoded_token.get('exp')
+    username = decoded_token.get("sub")
+    expiration = decoded_token.get("exp")
 
     if expiration is None:
         return False
@@ -68,11 +67,13 @@ def is_decoded_token_valid(decoded_token: dict) -> bool:
     return True
 
 
-def get_current_user(db_session: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+def get_current_user(
+    db_session: Session = Depends(get_db), token: str = Depends(oauth2_scheme)
+):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail='Invalid authentication credentials',
-        headers={'Authenticate': 'Bearer'}
+        detail="Invalid authentication credentials",
+        headers={"Authenticate": "Bearer"},
     )
 
     try:
@@ -81,7 +82,7 @@ def get_current_user(db_session: Session = Depends(get_db), token: str = Depends
         if not is_decoded_token_valid(payload):
             raise credentials_exception
 
-        token_data = TokenData(username=payload.get('sub'))
+        token_data = TokenData(username=payload.get("sub"))
     except JWTError:
         raise credentials_exception
 
@@ -97,6 +98,9 @@ def get_current_admin_user(current_user: User = Depends(get_current_user)):
     user = current_user
 
     if not user.is_admin:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='The user does not have enough privileges')
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="The user does not have enough privileges",
+        )
 
     return user

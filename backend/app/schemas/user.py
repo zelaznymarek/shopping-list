@@ -1,8 +1,7 @@
-from typing import Optional, List
-
-from pydantic import BaseModel, EmailStr
+from typing import List, Optional
 
 from app.schemas.shopping_list import ShoppingList
+from pydantic import BaseModel, EmailStr
 
 
 class UserBase(BaseModel):
