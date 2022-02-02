@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from sqlalchemy.orm.session import Session
 
-from app.db import models
+from backend.app.db import models
 
 
 def get_by_id(db_session: Session, product_id: int) -> Optional[models.Product]:

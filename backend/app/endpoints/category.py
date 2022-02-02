@@ -3,11 +3,11 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm.session import Session
 
-from app.auth import get_current_user
-from app.db import models
-from app.db.session import get_db
-from app.repository import category as crud
-from app.schemas import category as schemas
+from backend.app.auth import get_current_user
+from backend.app.db import models
+from backend.app.db.session import get_db
+from backend.app.repository import category as crud
+from backend.app.schemas import category as schemas
 
 router = APIRouter(redirect_slashes=False)
 

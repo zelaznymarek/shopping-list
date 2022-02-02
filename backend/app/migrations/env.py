@@ -3,8 +3,8 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import create_engine
 
-from app import settings
-from app.db.models import Base
+from backend.app import settings
+from backend.app.db.models import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

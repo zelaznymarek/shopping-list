@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
 
-from app.db.session import Base
+from backend.app.db.session import Base
 
 product_list = Table(
     "product_list",

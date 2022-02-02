@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from sqlalchemy.orm.session import Session
 
-from app.db import models
+from backend.app.db import models
 
 
 def get_by_id(db_session: Session, category_id: int) -> Optional[models.Category]:
@@ -40,7 +40,7 @@ def remove(db_session: Session, category: models.Category):
 
 
 def update(
-    db_session: Session, *, db_category: models.Category, category_to_update: dict
+    db_session: Session, *, db_category: models.Category, category_to_update: dict,
 ) -> models.Category:
     for field, value in category_to_update.items():
         setattr(db_category, field, value)

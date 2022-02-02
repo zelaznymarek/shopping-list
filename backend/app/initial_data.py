@@ -1,5 +1,5 @@
-from app.db.init import init
-from app.db.session import SessionLocal
+from backend.app.db.init import init
+from backend.app.db.session import SessionLocal
 
 
 def run():

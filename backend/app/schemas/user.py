@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr
 
-from app.schemas.shopping_list import ShoppingList
+from backend.app.schemas.shopping_list import ShoppingList
 
 
 class UserBase(BaseModel):

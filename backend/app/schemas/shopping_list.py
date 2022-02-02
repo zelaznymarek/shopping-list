@@ -3,7 +3,7 @@ from typing import List
 
 from pydantic import BaseModel
 
-from app.schemas.product import Product
+from backend.app.schemas.product import Product
 
 
 class ShoppingListBase(BaseModel):

@@ -3,8 +3,8 @@ from typing import List, Optional
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm.session import Session
 
-from app.db import models
-from app.repository.product import get_by_id as get_product_by_id
+from backend.app.db import models
+from backend.app.repository.product import get_by_id as get_product_by_id
 
 
 def get_by_id(db_session: Session, shopping_list_id: int) -> Optional[models.List]:

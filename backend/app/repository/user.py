@@ -2,9 +2,9 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from app.auth import get_password_hash
-from app.db.models import User
-from app.schemas.user import UserCreate
+from backend.app.auth import get_password_hash
+from backend.app.db.models import User
+from backend.app.schemas.user import UserCreate
 
 
 def create(db_session: Session, new_user: UserCreate) -> User:

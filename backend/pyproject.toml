@@ -5,7 +5,7 @@ description = ""
 authors = ["Marek Zelazny"]
 
 [tool.poetry.dependencies]
-python = "^3.9.7"
+python = "^3.9"
 fastapi = "^0.70.0"
 alembic = "^1.7.5"
 psycopg2-binary = "^2.9.2"
@@ -20,16 +20,16 @@ uvicorn = {extras = ["standard"], version = "^0.15.0"}
 black = "^21.9b0"
 isort = "^5.9.3"
 flake8 = "^3.9.2"
-flake8-eradicate = "^1.1.0"
-flake8-comprehensions = "^3.6.1"
-flake8-bugbear = "^21.9.1"
-pytest = "6.0.1"
+flake8-eradicate = "^1.2.0"
+flake8-comprehensions = "^3.8.0"
+flake8-bugbear = "^22.1.11"
+pytest = "6.2.5"
 freezegun = "^1.1.0"
 requests = "^2.26.0"
 ipython = "^7.29.0"
 
 [tool.black]
-target-version = ["py39"]
+target-version = ["py310"]
 
 [tool.isort]
 profile = "black"
