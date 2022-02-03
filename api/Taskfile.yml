@@ -1,0 +1,151 @@
+version: '3'
+
+vars:
+  PYTHON_VERSION: 3.10.2
+  POETRY_VERSION: 1.2.0a2
+
+env:
+  PYTHONPATH: shopping_list:tests
+
+tasks:
+  setup:
+    desc: "Setup the local environment"
+    cmds:
+      - task: setup:python
+      - task: setup:poetry
+      - task: setup:virtualenv
+
+  setup:python:
+    cmds:
+      - cmd: asdf plugin add python
+        ignore_error: true
+      - asdf plugin update python
+      - asdf install python {{.PYTHON_VERSION}}
+      - asdf local python {{.PYTHON_VERSION}}
+    status:
+      - '[[ "$(which python)" == *"/.asdf/"* ]]'
+      - '[[ "$(python --version)" == "Python {{.PYTHON_VERSION}}" ]]'
+    preconditions:
+      - sh: "asdf help"
+        msg: "asdf is required to run this task"
+
+  setup:poetry:
+    cmds:
+      - cmd: asdf plugin add poetry
+        ignore_error: true
+      - asdf plugin update poetry
+      - asdf install poetry {{.POETRY_VERSION}}
+      - asdf local poetry {{.POETRY_VERSION}}
+    preconditions:
+      - sh: "asdf help"
+        msg: "asdf is required to run this task"
+
+  setup:virtualenv:
+    cmds:
+      - poetry env use $(which python)
+    status:
+      - poetry env info -p
+      - '[[ "$(poetry run python --version)" == "Python {{.PYTHON_VERSION}}" ]]'
+    preconditions:
+      - sh: command -v poetry
+        msg: poetry is required to run this task
+
+  install:
+    desc: Install project's dependencies
+    sources:
+      - .venv/**/*
+      - poetry.lock
+      - pyproject.toml
+    method: checksum
+    cmds:
+      - poetry install
+    preconditions:
+      - sh: command -v poetry
+        msg: poetry is required to run this task
+
+  update:
+    desc: Update project's dependencies
+    sources:
+      - poetry.lock
+      - pyproject.toml
+    method: checksum
+    cmds:
+      - poetry update
+    preconditions:
+      - sh: command -v poetry
+        msg: poetry is required to run this task
+
+  build:
+    cmds:
+      - docker-compose build
+    preconditions:
+      - sh: "docker-compose version"
+        msg: docker-compose is required to run this task
+
+  build:scratch:
+    cmds:
+      - docker-compose build --no-cache
+    preconditions:
+      - sh: "docker-compose version"
+        msg: "docker-compose is required to run this task"
+
+  test:
+    env:
+      ENV_FILE: .env.tests
+    cmds:
+      - poetry run pytest tests -vvvs
+    preconditions:
+      - sh: command -v poetry
+        msg: poetry is required to run this task
+
+  test:in-docker:build:
+    cmds:
+      - docker-compose -f test-docker-compose.yml build
+    preconditions:
+      - sh: "docker-compose version"
+        msg: "docker-compose is required to run this task"
+
+  test:in-docker:abort:
+    cmds:
+      - docker-compose -f test-docker-compose.yml down
+    preconditions:
+      - sh: "docker-compose version"
+        msg: "docker-compose is required to run this task"
+
+  test:in-docker:
+    cmds:
+      - docker-compose -f test-docker-compose.yml up -d test_postgres
+      - docker-compose -f test-docker-compose.yml run --rm test_backend
+      - docker-compose -f test-docker-compose.yml down
+    preconditions:
+      - sh: "docker-compose version"
+        msg: "docker-compose is required to run this task"
+
+  format:
+    cmds:
+      - poetry run isort shopping_list tests
+      - poetry run black shopping_list tests
+    preconditions:
+      - sh: "poetry -V"
+        msg: "poetry is required to run this task"
+
+  run:db:
+    cmds:
+      - docker-compose up -d postgres
+
+  run:app:
+    cmds:
+      - python shopping_list/main.py
+  run:in-docker:
+    cmds:
+      - docker-compose up -d
+    preconditions:
+      - sh: "docker-compose version"
+        msg: "docker-compose is required to run this task"
+
+  stop:docker:
+    cmds:
+      - docker-compose down
+    preconditions:
+      - sh: "docker-compose version"
+        msg: "docker-compose is required to run this task"
