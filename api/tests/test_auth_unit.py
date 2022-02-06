@@ -53,7 +53,7 @@ def test_create_access_token_with_expiration():
     decoded = jwt.decode(token, secret_key, algorithms=[ALGORITHM])
 
     assert decoded["sub"] == data["sub"]
-    assert decoded["exp"] == (date + delta).timestamp()
+    assert decoded["exp"] == (datetime.utcnow() + delta).timestamp()
 
 
 @freeze_time(date)
@@ -68,7 +68,7 @@ def test_create_access_token_with_default_expiration():
     decoded = jwt.decode(token, secret_key, algorithms=[ALGORITHM])
 
     assert decoded["sub"] == data["sub"]
-    assert decoded["exp"] == (date + timedelta(minutes=15)).timestamp()
+    assert decoded["exp"] == (datetime.utcnow() + timedelta(minutes=15)).timestamp()
 
 
 def test_authenticate_user(example_user):

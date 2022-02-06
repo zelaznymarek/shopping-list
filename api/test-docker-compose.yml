@@ -1,10 +1,10 @@
 version: '3.7'
 services:
   test_postgres:
-    image: postgres:12
+    image: postgres:14.0-alpine
     restart: on-failure
     environment:
-      POSTGRES_DB: shopping
+      POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
@@ -14,7 +14,7 @@ services:
     build:
       context: .
       dockerfile: test.dockerfile
-    command: bash -c "poetry run alembic upgrade head && poetry run pytest -vvvvs"
+    command: bash -c "poetry run alembic upgrade head && poetry run pytest -vvv"
     environment:
       PYTHONPATH: .
       DATABASE_URL: 'postgresql://postgres:postgres@test_postgres:5432/shopping'

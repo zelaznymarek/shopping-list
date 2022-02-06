@@ -75,6 +75,65 @@ tasks:
       - sh: command -v poetry
         msg: poetry is required to run this task
 
+  format:
+    cmds:
+      - poetry run isort shopping_list tests
+      - poetry run black shopping_list tests
+    preconditions:
+      - sh: "poetry -V"
+        msg: "poetry is required to run this task"
+
+  test:
+    env:
+      ENV_FILE: .env.tests
+    cmds:
+      - task: run:test-db
+      - task: migrate
+      - poetry run pytest tests -vvv {{.CLI_ARGS}}
+      - task: stop:test-db
+    preconditions:
+      - sh: command -v poetry
+        msg: poetry is required to run this task
+
+  test:in-parallel:
+    cmds:
+      - task: test
+        vars:
+          CLI_ARGS: -n auto {{.CLI_ARGS}}
+
+  run:db:
+    cmds:
+      - docker-compose -f docker-compose.yml up -d postgres
+
+  stop:
+    cmds:
+      - docker-compose -f docker-compose.yml down --remove-orphans
+
+  run:test-db:
+    cmds:
+      - docker-compose -f test-docker-compose.yml up -d test_postgres
+
+  stop:test-db:
+    cmds:
+      - docker-compose -f test-docker-compose.yml down -v --remove-orphans
+
+  migrate:
+    desc: Runs migrations on currently running db
+    cmds:
+      - poetry run alembic upgrade head
+    preconditions:
+      - sh: docker exec api_test_postgres_1 pg_isready
+        msg: Could not find a running database
+
+  run:app:
+    cmds:
+      - python shopping_list/main.py
+
+
+
+
+
+
   build:
     cmds:
       - docker-compose build
@@ -89,14 +148,19 @@ tasks:
       - sh: "docker-compose version"
         msg: "docker-compose is required to run this task"
 
-  test:
-    env:
-      ENV_FILE: .env.tests
+  run:in-docker:
     cmds:
-      - poetry run pytest tests -vvvs
+      - docker-compose up -d
     preconditions:
-      - sh: command -v poetry
-        msg: poetry is required to run this task
+      - sh: "docker-compose version"
+        msg: "docker-compose is required to run this task"
+
+  stop:docker:
+    cmds:
+      - docker-compose down
+    preconditions:
+      - sh: "docker-compose version"
+        msg: "docker-compose is required to run this task"
 
   test:in-docker:build:
     cmds:
@@ -117,35 +181,6 @@ tasks:
       - docker-compose -f test-docker-compose.yml up -d test_postgres
       - docker-compose -f test-docker-compose.yml run --rm test_backend
       - docker-compose -f test-docker-compose.yml down
-    preconditions:
-      - sh: "docker-compose version"
-        msg: "docker-compose is required to run this task"
-
-  format:
-    cmds:
-      - poetry run isort shopping_list tests
-      - poetry run black shopping_list tests
-    preconditions:
-      - sh: "poetry -V"
-        msg: "poetry is required to run this task"
-
-  run:db:
-    cmds:
-      - docker-compose up -d postgres
-
-  run:app:
-    cmds:
-      - python shopping_list/main.py
-  run:in-docker:
-    cmds:
-      - docker-compose up -d
-    preconditions:
-      - sh: "docker-compose version"
-        msg: "docker-compose is required to run this task"
-
-  stop:docker:
-    cmds:
-      - docker-compose down
     preconditions:
       - sh: "docker-compose version"
         msg: "docker-compose is required to run this task"
