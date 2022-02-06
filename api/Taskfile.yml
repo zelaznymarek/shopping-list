@@ -127,7 +127,7 @@ tasks:
 
   run:app:
     cmds:
-      - python shopping_list/main.py
+      - python src/shopping_list/main.py
 
 
 
